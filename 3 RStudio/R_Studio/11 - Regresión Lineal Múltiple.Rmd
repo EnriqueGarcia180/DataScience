@@ -1,0 +1,617 @@
+---
+title: "Regresión Lineal Múltiple"
+author: "David Nexticapan Cortes"
+date: "2025-03-08"
+output: html_document
+---
+
+Cargamos librearías
+```{r, warning=FALSE, message=FALSE}
+library(readxl)
+library(ggplot2)
+library(gridExtra) # Forma de organizar los gráficos.
+library(GGally)
+library(corrplot)
+library(car) # qqPlot de los residuales.
+library(lmtest) # Prueba de autocorrelación de DW
+library(nortest) # Prueba de KS
+library(MASS)
+library(caTools) # sample.split
+library(tseries) #Prueba de Jarque Bera
+```
+
+Cargamos la base de datos
+```{r}
+Pulso <- read_excel("PulsoCardiacoMujeres.xlsx")  # Peso sera la variable respuesta y todas las demas seran variables predictoras.
+head(Pulso)
+```
+
+**Análisis Exploratorio**
+
+Verificamos si tenemos la presencia de valores NA
+```{r}
+colSums(is.na(Pulso)) # No hay presencia de valores NA
+```
+
+Realizamos un resumen de estadísticas descriptivas de todas las variables esta vez porque haremos un analisis de regresion multiple con todas las variables
+```{r}
+summary(Pulso)
+```
+Interpretación:
+
+  - Para las variables Edad, Peso, Cintura y Pulso la mediana es menor que la media, lo que sugiere que la distribución pueda presentar una asimetría a la derecha.
+  
+  - Para la variable Estatura la media es menor que la mediana, lo que sugiere que la distribucion pueda presentar una asimetria a la izquierda.
+  
+  - En cuestión del pulso, el estandar normal es de 60 a 100 latidos por minuto. En este caso, el 25% de la mujeres de la muestra tienen 80 o más pulsaciones por minuto. 
+
+Boxplot para cada variable
+
+Nota: en el anilisis de sibgle variable usamos Histograma.
+```{r}
+variables <- c("Edad", "Estatura", "Peso", "Cintura", "Pulso")
+
+# Configura una ventana de gráficos
+par(mfrow = c(2,3))  # 2 filas, 3 columnas
+
+# Recorremos cada variable para graficarla
+for (var in variables) {
+  datos <- Pulso[[var]]
+  boxplot(datos, col = "salmon", main = paste("Boxplot de", var), ylab = var)
+  # Mostrar estadísticas del boxplot en la consola
+  print(paste("Estadísticas del boxplot para:", var))
+  print(boxplot.stats(datos))
+}
+```
+
+  - La variable peso tiene dos valores outliers que son 107.3 y 115.2
+  
+  - La variable Pulso tiene dos valores outliers que son 104 y 124
+  
+  
+
+Matriz de correlaciones
+```{r}
+matriz_corr <- cor(select_if(Pulso, is.numeric))
+matriz_corr
+```
+
+Diagrama de calor para ver la matriz de correlaciones.
+```{r}
+corrplot(matriz_corr, method = "color", addCoef.col = "black")
+```
+
+  - Tenemos una correlación positiva muy fuerte entre la cintura y el peso de una mujer.
+  
+  - Tenemos una correlación positiva moderada en tre las variables Peos y Edad y también entre Cintura y Edad.
+  
+  - Tenemos una correlación positiva debil entre las demás variables.
+  
+  
+Matriz de gráficos de dispersión
+```{r}
+pairs(Pulso, main = "Matriz de gráficos de dispersión", pch = 20, col =  "blue", lwd = 3)
+  # 'pch = 20': bullet (smaller solid circle, 2/3 the size of 19)
+
+# Es clara la correlación positiva entre el peso y la cintura de una mujer.
+
+```
+
+Histogramas para cada variable
+```{r}
+variables <- c("Edad", "Estatura", "Peso", "Cintura", "Pulso")
+
+# Configura una ventana de gráficos (ajusta según el número de variables)
+par(mfrow = c(3, 2))  # 3 filas, 2 columnas (ajustable)
+
+# Recorremos cada variable para graficarla
+for (var in variables) {
+  datos <- Pulso[[var]]
+  hist(datos, probability = TRUE, main = paste("Distribución de", var), xlab = var, col = "salmon1", breaks = nclass.Sturges(datos))
+  lines(density(datos), col = "black", lwd = 3)
+  curve(dnorm(x, mean = mean(datos), sd = sd(datos)), add = TRUE, col = "blue", lwd = 3)
+}
+```
+
+**Aplicación del Modelo**
+
+Seleccionamos como nuestra variable de respuesta a "Peso" y nuestras variables predictoras a todas las demas:
+
+Dividir nuestros datos en datos de entrenamiento y datos de prueba.
+```{r}
+set.seed(42)
+
+# Barajeamos la base de datos
+barajeo <- slice_sample(Pulso, prop = 1)
+
+# Dividimos aleatoriamente los datos
+split <- sample.split(barajeo$Edad, SplitRatio = 0.8) # Vector lógico 
+
+# Base de entrenamiento
+train <- subset(barajeo, split == TRUE)
+
+# Base de Prueba o Testeo
+test <- subset(barajeo, split == FALSE)
+```
+
+
+
+Ajustamos el modelo con los datos de entrenamiento
+```{r}
+modelo <- lm(Peso ~ ., data = train)  # el "." significa que el Peso se va a relacionar con todas las demas variables.
+summary(modelo)
+```
+
+El modelo ajustado es:
+$$
+\hat{y}=\hat{𝛽_0}+\hat{𝛽_1}x_1+\hat{𝛽_2}x_2+...+\hat{𝛽_n}x_n
+$$
+
+$$
+\hat{Peso}=-95.898129+(-0.130789 ∗Edad)+(48.803620∗Estatura)+(1.027751∗Cintura)+(0.0076117 ∗Pulso)
+$$
+Recordamos que para el **Fisher's Test** 
+$$
+H_0: \beta_1 = \beta_2 = \beta_3 = \beta_4 = 0 \\
+H_1: \beta_1 \neq \beta_2 \neq \beta_3 \neq \beta_4 \neq 0
+$$
+
+  - Como no hay una 'unica' Beta sino varias, es como si fuera un "ANOVA" para las Betas. Analysis of Variance (ANOVA): https://www.questionpro.com/blog/es/anova/ 
+  
+  - El p-value de la prueba de Fisher es 7.377e-12 < 0.05, lo que nos lleva a rechazar la hipótesis Nula en favor de la alternativa. Es decir, al menos una de las variables predictoras tiene un efecto significativo en el peso.
+  
+  - Las variables **Estatura**, **Cintura** y el **intercepto** son significativas para el modelo ya que su p_value < 0.05.
+  
+  - Las variables **Edad** y **Pulso** no son significativas para el modelo porque el p-value > 0.05.
+  
+  - Un aumento de 1 cm en la cintura se asocia con un aumento promedio de 1.027751 kg en el peso, manteniendo las demás variables constantes.
+  
+  - Un aumento de 1 metro en la estatura se asocia con un incremento promedio de 48.803620 kg en el peso.
+  
+  - R-squared = 0.876. El modelo explica 87.6% de la variabilidad en el Peso usando las variables Edad, Estatura, Cintura y Pulso. "measures the proportion of variance in the dependent variable explained by the independent variables in a regression model. R² always increases when more predictors are added"
+  
+  - Adjusted R-squared = 0.8577. El modelo explica el 85.77% de la variabilidad en el peso considerando el número de predictores utilizados. "Adjusted R-squared is a modified version of R² that penalizes the addition of unnecessary independent variables. Adjusted R² only increases if the added predictor improves the model's fit significantly and may even decrease if the added predictor is not useful"
+  
+  - Residuales. Aqui observamos que la mediana ya se acerca a cero.
+  
+  
+**Verificamos supuestos**
+
+# Primer supuesto: **Media de los residuales**
+```{r}
+summary(residuals(modelo)) # Podemos observar que su media es de 0.
+```
+
+# Segundo supuesto: Varianza constante (Homocedasticidad). **Test de Breusch - Pagan**
+
+  - $H_0:$ La varianza de los errores es constante (homocedasticidad)
+  
+  - $H_1:$ La varianza de los errores no es constante (heterocedasticidad)
+  
+```{r}
+plot(fitted(modelo), residuals(modelo), col = 'blue', pch = 16, main = 'Fitted vs Residuals')
+abline(h=0, col='red')
+#  Como los puntos están dispersos de forma aleatoria arriba y abajo de la línea roja y no hay patrones se sugiere que si hay homocedasticidad.
+
+bp_test <- bptest(modelo)
+bp_test
+if (bp_test$p.value > 0.05){
+  cat("Como p_value =", bp_test$p.value, "> 0.05, no se rechaza la hipótesis \n")
+  cat("Por lo tanto, la varianza de los errores es constante (hay homocedasticidad)")
+} else{
+  cat("Como p_value =", bp_test$p.value, "< 0.05, se rechaza la hipótesis en favor de la alternativa \n")
+  cat("Por lo tanto, la varianza de los errores NO es constante (hay heterocedasticidad)")  
+}
+```
+ 
+# Tecer Supuesto: Normalidad de los residuos. **Test Jarque - Bera**
+
+  - $H_0:$ Los residuos siguen una distribución normal (sin sesgo ni curtosis excesiva)
+  
+  - $H_1:$ Los residuos NO siguen una distribución normal (pueden tener sesgo y curtosis fuera de los parámetros normales)
+
+```{r}
+hist(residuals(modelo), col='blue', main='Histograma de residuos', breaks = nclass.Sturges(modelo$residuals))
+qqPlot(residuals(modelo))
+  # Vemos que ninguna observacion se sale de las bandas de confianza
+boxplot(residuals(modelo), main='Diagrama de caja de residuos') 
+  # Vemos que su mediana es aproximadamente cero y no hay outliers.
+  # Vemos que es casi simetrico (normalidad)
+
+jb_test <- jarque.bera.test(residuals(modelo))
+jb_test
+if (jb_test$p.value > 0.05){
+  cat("Como p_value =", jb_test$p.value, "> 0.05, no se rechaza la hipótesis nula \n")
+  cat("Por lo tanto, los residuos siguen una distribución normal")
+} else{
+  cat("Como p_value =", jb_test$p.value, "< 0.05, se rechaza la hipótesis nula en favor de la alternativa \n")
+  cat("Por lo tanto, los residuos NO siguen una distribución normal")  
+}
+```
+
+# Cuarto Supuesto: Resiudos independientes. **Test Durbin - Watson**
+
+  - $H_0:$ NO hay autocorrelación en los residuos (es decir, los residuos son independientes entre sí). <- esto es lo que queremos, no rechazar H_0
+  
+  - $H_1:$ Sí hay autocorrelación en los residuos
+  
+```{r}
+dw_test <- dwtest(modelo)
+dw_test
+if (dw_test$p.value > 0.05){
+  cat("Como p_value =", dw_test$p.value, "> 0.05, no se rechaza la hipótesis \n")
+  cat("Por lo tanto, NO hay autocorrelación en los residuos, es decir, los residuos son independientes entre sí")
+} else{
+  cat("Como p_value =", dw_test$p.value, "< 0.05, se rechaza la hipótesis en favor de la alternativa \n")
+  cat("Por lo tanto, sí hay autocorrelación en los residuos")  
+}
+```
+Hasta aqui vamos bien. Tenemos un buen R^2, un R^2 ajustada, no se viola nunguno de los 4 supuestos de e. Incluso con variables que NO son significativas para el modelo: Edad y Pulso.
+
+
+
+
+**Predicciones**
+  
+```{r}
+# Predicciones en el conjunto de prueba
+predicciones <- predict(modelo, newdata = test, interval = "confidence", level = 0.95)
+
+# Guardar las predicciones y los intervalos de confianza en el conjunto de prueba
+test$predicted <- predicciones[,1]
+test$lower <- predicciones[,2]
+test$upper <- predicciones[,3]
+
+# Ver el conjunto de prueba con las nuevas columnas de predicciones
+test
+```
+
+
+**Valores Influyentes**
+
+![](Distancia de Cook.jpg)
+
+![](Valor Hat.jpg)
+
+```{r}
+influencia <- influence.measures(modelo)
+
+# Mostramos las medidas de influencia
+summary(influencia)
+
+# Identificar puntos con alta influencia filtrando por Cook's Distance:
+cd_influencia = influencia$summaries[which(influencia$summaries$cook.d > 1),] # >1 es muy alta
+cat("Valores con influencia 'muy alta' de acuerdo a Cook's distance:", cd_influencia, "\n")
+
+p <- 5 # no. de predictores + 1 
+n <- nrow(train)
+umbral1 <- 2 * (p/n)
+umbral2 <- 3 * (p/n)
+cat("Umbral de leverage (hat) sospechoso:", round(umbral1, 4), "\n")
+cat("Umbral de leverage (hat) alto:", round(umbral2, 4), "\n")
+```
+
+Observación 11:
+
+  - cook.d = 0.13: influencia moderada en el modelo.
+
+  - hat = 0.42: es un valor 'sospechoso' (0.42 > 0.3125) lo que indica que la observación puede tener influencia sobre su predicción.
+  
+  - Podemos decir que es una observación influyente en menor grado.
+
+Observación 20:
+
+  - cook.d = 0.00: nula influencia en el modelo.
+
+  - hat = 0.26: es un valor bajo, lo que indica que esta observación tiene una influencia sobre su predicción muy baja a nula.
+  
+  - Podemos decir que es una observación no influyente ya que no impacta al modelo.
+
+Observación 21:
+
+  - cook.d = 0.61: tiene una influencia alta en el modelo.
+
+  - hat = 0.57: es un valor muy alto lo que indica que la observación tiene una gran influencia sobre su predicción.
+  
+  - Podemos decir que es una observación muy influyente y de alto leverage.
+
+```{r}
+# Graficar influencia
+plot(modelo, which = 4:5)
+  # 4: grafico de "Cook's distance"
+  # 5: grafico de "Residuals vs Leverage"
+```
+  
+  - La mayoría de los puntos están concentrados en el centro.
+  
+  - La linea roja esta menos ajustada a la linea horizontal cero comparada con el modelo lineal.
+  
+  - El punto 21 tiene un leverage alto y está por encima de la primera curva gris lo que puede estar influenciando mucho en la forma del modelo.
+  
+  - El punto 13 y 31 tienen un residuo grande aunque con leverage moderadamente bajo. Podríamos sugerir que el modelo no los predijo bien.
+
+  
+```{r}
+# Ver de la base de datos "modelo" las obsevaciones 21, 13 y 31
+train[c(21,13,31),]
+```
+
+
+
+#**Modelo 2** Es una relacion solo con las variables significativas: Estatura y Cintura
+
+```{r}
+modelo2 <- lm(Peso ~ Estatura + Cintura, data = train)
+summary(modelo2)
+```
+ - Fisher's test, el p-value < 0.05, tenemos al menos una Beta significativamente diferente de cero
+ 
+ - Los tres p-value son < 0.05 lo que significa que las tres variables son significativas para el modelo.
+
+ - Multiple R-squared quedo casi igual (era 0.876) y Adjusted R-squared mejoro un poco (era .8577), ambas siguen ciendo cercanas a 1.0 
+ 
+ - R-squared "measures the proportion of variance in the dependent variable explained by the independent variables in a regression model. R² always increases when more predictors are added
+  
+ - Adjusted R-squared es para modelos de regresion lineal multiple (con varias variables).
+ 
+ - Adjusted R-squared is a modified version of R² that penalizes the addition of unnecessary independent variables. Adjusted R² only increases if the added predictor improves the model's fit significantly and may even decrease if the added predictor is not useful
+ 
+
+
+El modelo ajustado es:
+$$
+\hat{Peso}=-92.33078+(47.80390∗Estatura)+(0.96101∗Cintura)
+$$
+
+- El valor p de la prueba de Fisher es 1.221e-13 < 0.05, lo que nos lleva a rechazar la hipótesis nula en favor de la alternativa. Es decir, al menos una de las variables predictoras tiene un efecto significativo en el peso.
+  
+  - Las variables **Estatura**, **Cintura** y el **intercepto** son significativas para el modelo ya que su p_value son menores que 0.05.
+
+  - Un aumento de 1 cm en la cintura se asocia con un aumento promedio de 0.96101 kg en el peso.
+  
+  - Un aumento de 1 metro en la estatura se asocia con un incremento promedio de 47.80390 kg en el peso.
+  
+  - Multiple R-squared. El modelo explica 87.13% de la variabilidad en el peso usando las variables Estatura y Cintura.
+  
+  - Adjusted R-squared. El modelo explica el 86.25% de la variabilidad en el peso considerando el número de predictores utilizados.
+  
+  
+  
+  
+**Verificación de Supuestos**
+
+Media de los residuales
+```{r}
+summary(residuals(modelo2)) # Podemos observar que su media es de 0.
+```
+
+Varianza constante (Homocedasticidad). Test de Breusch - Pagan
+
+  - $H_0:$ La varianza de los errores es constante (homocedasticidad)
+  
+  - $H_1:$ La varianza de los errores no es constante (heterocedasticidad)
+  
+```{r}
+plot(fitted(modelo2), residuals(modelo2), col = 'blue', pch = 16, main = 'Fitted vs Residuals')
+abline(h=0, col='red')
+# Como los puntos están dispersos de forma aleatoria arriba y abajo de la línea roja y no hay patrones se sugiere que si hay homocedasticidad.
+
+bp_test <- bptest(modelo2)
+bp_test
+if (bp_test$p.value > 0.05){
+  cat("Como p_value =", bp_test$p.value, "> 0.05, no se rechaza la hipótesis \n")
+  cat("Por lo tanto, la varianza de los errores es constante (hay homocedasticidad)")
+} else{
+  cat("Como p_value =", bp_test$p.value, "< 0.05, se rechaza la hipótesis en favor de la alternativa \n")
+  cat("Por lo tanto, la varianza de los errores no es constante (hay heterocedasticidad)")  
+}
+```
+
+Normalidad de los residuos. Test Jarque - Bera
+
+  - $H_0:$ Los residuos siguen una distribución normal (sin sesgo ni curtosis excesiva)
+  
+  - $H_1:$ Los residuos no siguen una distribución normal (pueden tener sesgo y curtosis fuera de los parámetros normales)
+
+```{r}
+hist(residuals(modelo2), col='blue', main='Histograma de residuos', breaks = nclass.Sturges(modelo2$residuals))
+qqPlot(residuals(modelo2))
+boxplot(residuals(modelo2), main='Diagrama de caja de residuos') # Su mediana es aproximadamente cero y no hay outliers.
+
+jb_test <- jarque.bera.test(residuals(modelo2))
+jb_test
+if (jb_test$p.value > 0.05){
+  cat("Como p_value =", jb_test$p.value, "> 0.05, no se rechaza la hipótesis nula \n")
+  cat("Por lo tanto, los residuos siguen una distribución normal")
+} else{
+  cat("Como p_value =", jb_test$p.value, "< 0.05, se rechaza la hipótesis nula en favor de la alternativa \n")
+  cat("Por lo tanto, los residuos no siguen una distribución normal")  
+}
+```
+
+Resiudos independientes. Test Durbin - Watson
+
+  - $H_0:$ No hay autocorrelación en los residuos
+  
+  - $H_1:$ Sí hay autocorrelación en los residuos
+  
+```{r}
+dw_test <- dwtest(modelo2)
+dw_test
+if (dw_test$p.value > 0.05){
+  cat("Como p_value =", dw_test$p.value, "> 0.05, no se rechaza la hipótesis \n")
+  cat("Por lo tanto, NO hay autocorrelación en los residuos, es decir, los residuos son independientes entre sí")
+} else{
+  cat("Como p_value =", dw_test$p.value, "< 0.05, se rechaza la hipótesis en favor de la alternativa \n")
+  cat("Por lo tanto, sí hay autocorrelación en los residuos")  
+}
+```
+Por lo tanto el MODELO_2 tambien parece ser un buen modelo pues cumple con todos los criterios de evaluacion, R-squares y los 4 supuestos de e.
+
+
+
+**Kappa**
+
+# MODELO_1 vs MODELO_2
+
+```{r}
+# Primero MODELO_1 con todas las variables predictoras del Modelo
+X <- model.matrix(~ Estatura + Cintura + Edad + Pulso, data = train)[,-1]  # Quitamos intercepto
+kappa(X)  # Esto te da un valor más preciso
+```
+Un número de condición de 340.512 indica una multicolinealidad fuerte. Esto sugiere que las variables independientes están muy correlacionadas entre sí.
+
+Por ejemplo: Cintura y Edad tienen una correlacion de 0.66, esto indica que Cintura pudiera representar bien a la Edad. Por eso Cintura es una variable significativa y por eso luego quitamos a Edad en el Modelo 2 como variable significativa predictora.
+
+
+
+```{r}
+# Solo seleccionamos las variables predictoras significativas del modelo
+X <- model.matrix(~ Estatura + Cintura, data = train)[,-1]  # Quitamos intercepto
+kappa(X)  # Esto te da un valor más preciso
+```
+
+  - El valor 315.26 > 100 indica que existe una colinealidad grave entre las variables Estatura y Cintura. Esto sugiere que son muy similares linealmente.
+  
+  - Aunque el número de condición fue alto (315.26), la correlación entre Estatura y Cintura es baja (0.19).
+  
+  - En este caso como como kappa del modelo 2 es menor que la del modelo 1, y al pasar los 4 supuestos de e y tener una buena R^2 y R^2 ajustada podriamos decir que el modelo 2 es un poco mejor que el modelo 1.
+  
+
+**Predicciones** con el MODELO_2
+  
+```{r}
+# Predicciones en el conjunto de prueba
+test2 <- test
+predicciones <- predict(modelo2, newdata = test, interval = "confidence", level = 0.95)
+
+# Guardar las predicciones y los intervalos de confianza en el conjunto de prueba
+test2$predicted <- predicciones[,1]
+test2$lower <- predicciones[,2]
+test2$upper <- predicciones[,3]
+
+# Ver el conjunto de prueba con las nuevas columnas de predicciones
+test2
+```
+
+
+**Valores Influyentes**
+```{r}
+influencia <- influence.measures(modelo2)
+
+# Mostramos las medidas de influencia
+summary(influencia)
+
+# Identificar puntos con alta influencia filtrando por Cook's Distance:
+cd_influencia = influencia$summaries[which(influencia$summaries$cook.d > 1),] # >1 es muy alta
+cat("Valores con influencia 'muy alta' de acuerdo a Cook's distance:", cd_influencia, "\n")
+
+p <- 3 # no. de predictores + 1 
+n <- nrow(train)
+umbral1 <- 2 * (p/n)
+umbral2 <- 3 * (p/n)
+cat("Umbral de leverage (hat) sospechoso:", round(umbral1, 4), "\n")
+cat("Umbral de leverage (hat) alto:", round(umbral2, 4), "\n")
+```
+
+Observación 11:
+
+  - cook.d = 0.03: tiene una influencia baja en el modelo. 
+
+  - hat = 0.25: es un valor sospechoso lo que indica que la observación tiene una influencia sobre su predicción.
+  
+  - Podemos decir que es una observación no influyente ya que no impacta al modelo ni a su propia prediccion.
+
+Observación 20:
+
+  cook.d = 0.02: tiene una influencia baja en el modelo.
+
+  hat = 0.24: es un valor sospechoso lo que indica que la observación tiene una influencia sobre su predicción.
+  
+  - Podemos decir que es una observación no influyente ya que no impacta al modelo ni a su propia prediccion.
+  
+Entonces no habira necedidad de quitar estas dos obsrvacioes 11 y 20.
+  
+Observación 21:
+  
+  - Ya no esta. Era por el efecto del Pulso (que ya quitamos en el Modelo 2)
+
+```{r}
+# Graficar influencia
+plot(modelo2, which = 4:5)
+  # 4: grafico de "Cook's distance"
+  # 5: grafico de "Residuals vs Leverage"
+```
+  
+  - La mayoría de los puntos están concentrados en el centro.
+  
+  - El punto 26 y 31 tienen un leverage sospechoso ya que no sobrepasa el ubral alto de 0.2812.
+  
+  - El punto 13 tiene un residuo grande aunque con leverage moderadamente alto. Podríamos sugerir que el modelo no lo predijo bien.
+  
+```{r}
+# Ver de la base de datos "modelo" las obsevaciones 13, 26 y 31
+train[c(13,26,31),]
+```
+Consultar con un especialista estas tres observaciones en particular para ver si se puede o no quitar alguna(s) observacion(es) del modelo y crear otro modelo sin esa(s) obserrvacion(es) sospechosa(s).
+
+
+
+
+**Modelo 3** 
+
+Modelo Forward: 
+
+Sin nosotros decirle que variables usar, el modelo empieza vacio y va agregando variables hasta encontrar el mejor modelo.
+
+Ejemplo, empieza con un modelo vacio, solo el intercepto, el modelo empieza con una primera variable en la primer iteracion, podria ser la Cintura, se va a generar un modelo del Intercepto con la Cintura, se calculan las estadisticas. En una segunda iteracion se usan otras dos variables, i.e. Cintura y Estatura, se obtienen los estadisticos y se comparan con el anterior. En una tercer iteracion se agrega otra variable, se sacan estadisticas y se compara con el anterior. Si al agregar otra variable los resultados no mejoran entonces se regresa a un modelo anterior y se agrega una variable diferente. Hasta encontrar un modelo que ya no mejora con relacion al anterior.
+
+Ver abajo como empieza con Start (vacio: Intercepto) -> Step (Peso ~ Cintura) -> Step (Peso ~ Cintura + Estatura). Quiere decir que despues del modelo de la segunda iteracion ya NO se pudo encontrar un modelo mejor agregando mas variables.
+
+Criterio de Akaike (AIC): Computes the (generalized) Akaike An Information Criterion (AIC) for a fitted parametric model.
+
+```{r}
+# Modelo nulo: solo el intercepto
+modelo_nulo <- lm(Peso ~ 1, data = train)
+
+# Modelo completo: con todas las variables como predictores
+modelo_completo <- lm(Peso ~ ., data = train)
+
+# Selección hacia adelante (Forward)
+modelo_forward <- step(modelo_nulo,
+                       scope = formula(modelo_completo),
+                       direction = "forward")
+
+# Resumen del modelo seleccionado
+summary(modelo_forward)
+```
+ - Coincide con el Modelo 2: Peso ~ Cintura + Estatura
+
+
+
+**Modelo 4**
+
+Modelo Backward: 
+
+Empieza con el modelo completo con todas las variables y en cada iteracion va quitando variables hasta encontrar el mejor AIC.
+
+Ver abajo como empieza con Start (completo: Peso ~ Edad + Estatura + Cintura + Pulso) -> Step (Peso ~ Edad + Estatura + Cintura) -> Step (Peso ~ Estatura + Cintura). Quiere decir que despues del modelo de la segunda iteracion ya NO se pudo encontrar un modelo mejor quitando mas variables.
+
+Criterio de Akaike (AIC): Computes the (generalized) Akaike An Information Criterion (AIC) for a fitted parametric model.
+
+```{r}
+modelo_completo <- lm(Peso ~ ., data = train)
+
+# Aplicamos la selección hacia atrás
+modelo_backward <- step(modelo_completo, 
+                        direction = "backward")
+
+# Resumen del modelo
+summary(modelo_backward)
+```
+ - Coincide con el Modelo 2 y Modelo 3. 
+ 
+ - Nota: No siempre van a coincidir el Forward y el Backward
+ 
+ 
+ CONCLUSION: El Modelo_2 [Peso ~ Estatura + Cintura] es el mejor.

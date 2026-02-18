@@ -1,0 +1,239 @@
+---
+title: "Regresión Logística"
+author: "David Nexticapan Cortes"
+date: "2025-04-12"
+output: html_document
+---
+
+Cargamos librearías
+```{r, warning=FALSE, message=FALSE}
+library(readxl)
+library(dplyr)
+library(ggplot2)
+library(caTools) # Para sample.split
+library(caret)
+```
+
+Cargamos la base de datos
+```{r}
+Ingresos <- read_excel("Ingresos.xlsx")
+head(Ingresos)
+```
+
+**Análisis Exploratorio**
+```{r}
+colSums(is.na(Ingresos)) # No hay presencia de valores NA
+```
+
+```{r}
+resumen <- Ingresos %>% 
+  group_by(Adquiere_producto) %>% 
+  summarise(Total = n(),
+            Mínimo = min(Ingresos_mensuales_k),
+            Q1 = quantile(Ingresos_mensuales_k, 0.25),
+            Mediana = median(Ingresos_mensuales_k),
+            Media = mean(Ingresos_mensuales_k),
+            Q3 = quantile(Ingresos_mensuales_k, 0.75),
+            Máximo = max(Ingresos_mensuales_k)
+            ) %>% 
+  print()
+# 307 No adquiere el producto
+# 193 Adquieren el producto
+```
+
+```{r}
+boxplot(Ingresos_mensuales_k ~ Adquiere_producto, data = Ingresos,
+        col = c("lightblue", "lightgreen"),
+        names = c("No Adquiere", "Sí Adquiere"),
+        main = "Boxplot por Clase",
+        xlab = "Clase",
+        ylab = "Cantidad")
+```
+
+Buscamos los outliers de la clase "Sí adquiere el producto"
+```{r}
+# Información de Clase 0
+boxplot.stats(Ingresos$Ingresos_mensuales_k[Ingresos$Adquiere_producto == 0])
+
+# Información de Clase 1
+boxplot.stats(Ingresos$Ingresos_mensuales_k[Ingresos$Adquiere_producto == 1])
+
+# Buscamos índices de los outliers de Clase 1
+outliers_clase1 <- boxplot.stats(Ingresos$Ingresos_mensuales_k[Ingresos$Adquiere_producto == 1])$out
+indices_outliers_clase1 <- which(Ingresos$Ingresos_mensuales_k %in% outliers_clase1 & Ingresos$Adquiere_producto == 1)
+print(indices_outliers_clase1)
+```
+
+Realizamos el histograma de frecuencias
+```{r}
+# Asegúrate de que la variable de clase sea un factor
+Ingresos$Adquiere_producto <- as.factor(Ingresos$Adquiere_producto)
+
+ggplot(Ingresos, aes(x = Ingresos_mensuales_k, fill = Adquiere_producto)) +
+  # Histograma con transparencia, por clase
+  geom_histogram(aes(y = after_stat(density)), position = "identity", alpha = 0.5, bins = 30, color = "black") +
+  # Curva de densidad solo con línea, por clase
+  geom_density(aes(color = Adquiere_producto), fill = NA, size = 1.2)
+```
+
+Planteamos el siguiente juego de hipótesis
+$\mu_1:$ La media del ingreso salarial de los que no adquieren el producto.
+$\mu_2:$ La media del ingreso salarial de los que sí adquieren el producto.
+
+$$
+H_0: \mu_1 = \mu_2 \\
+H_1: \mu_1 \neq \mu_2
+$$
+
+```{r}
+t.test(Ingresos_mensuales_k ~ Adquiere_producto, 
+       data = Ingresos,
+       alternative = "two.sided",
+       mu = 0,
+       conf.level = 0.95) # Se rechaza la hipótesis nula. 
+```
+
+Tenemos 3 cosas que confirman que podemos aplicar el modelo logístico.
+
+**Aplicación del Modelo**
+
+Dividimos nuestros datos en "Entrenamiento" y "Prueba"
+```{r}
+set.seed(42)
+barajeado <- slice_sample(Ingresos, prop = 1)
+split <- sample.split(barajeado$Ingresos_mensuales_k, SplitRatio = 0.8) # Vector lógico 
+train <- subset(barajeado, split == TRUE)
+head(train)
+test <- subset(barajeado, split == FALSE)
+head(test)
+```
+
+```{r}
+# Ajuste del modelo de regresión logística
+modelo <- glm(Adquiere_producto ~ Ingresos_mensuales_k, data = train, family = binomial)
+
+# Resumen del modelo
+summary(modelo)
+```
+  - El modelo queda de la siguiente forma:
+
+$$
+log(\frac{p}{1-p})=-4.91779 + 0.14892 *Ingresos\;mensuales
+$$
+
+  - Ambos coeficientes $\beta_0$ y $\beta_1$ son significativos, ya que sus p_values son menores a 0.05. Esto indica que hay evidencia estadística para concluir que el ingreso mensual tiene un efecto sobre la probabilidad de adquirir el producto.
+  
+  - El coeficiente $\beta_1 = 0.14892$ indica que por cada aumento de 1 mil unidades monetarias en los ingresos mensuales, el logit de adquirir el producto aumenta en 0.14892.
+  
+  - En términos de odds (razones de probabilidades), esto equivale a exp(0.14892) = 1.16058, es decir, la razón de que el cliente adquiera el producto se multiplica por 1.16058 veces.
+  
+  - El intercepto del modelo es -4.91779, lo que representa el logit de que una persona con ingresos mensuales iguales a cero adquiera el producto. Aunque no tiene una interpretación práctica directa (porque en general no hay personas con ingresos exactamente 0 en el contexto), es necesario para ajustar el modelo.
+  
+Calculamos el intervalo de confianza para los coeficientes:
+```{r, message=FALSE}
+# Calcular el intervalo de confianza del 95%
+intervalo_ci <- confint(modelo, level = 0.95)
+print(intervalo_ci)
+```
+
+  - El intervalo de confianza para el intercepto es [-5.9133169, -4.0339333]. Esto significa que, con un 95% de confianza, el valor verdadero del intercepto se encuentra dentro de este rango.
+  
+  - Ingresos mensuales (Ingresos_mensuales_k): El intervalo de confianza para el coeficiente de los ingresos mensuales es [0.1223769, 0.1785717]. Esto indica que, con un 95% de confianza, el efecto de los ingresos sobre la probabilidad de adquirir el producto se encuentra dentro de este rango. Como el intervalo no incluye el cero, podemos afirmar que los ingresos son un predictor significativo de la adquisición del producto.
+
+
+Realizamos nuestras predicciones
+```{r}
+# Realizamos nuestras predicciones:
+predicciones <- predict(modelo, newdata = train, type = "response")
+head(predicciones)
+# type = "response": Esto indica que deseas obtener las probabilidades predichas (valores entre 0 y 1).
+```
+
+Realziamos nuestra clasificación
+```{r}
+# Clasificación basada en el umbral de 0.5
+clasificacion <- ifelse(predicciones < 0.5, 0, 1)
+
+# Mostrar la clasificación
+head(clasificacion)
+```
+
+Realizamos el gráfico del modelo:
+
+```{r}
+Ingresos$Adquiere_producto <- as.character(Ingresos$Adquiere_producto)
+Ingresos$Adquiere_producto <- as.numeric(Ingresos$Adquiere_producto)
+
+plot(Ingresos$Adquiere_producto ~ Ingresos$Ingresos_mensuales_k, 
+     data = Ingresos, col = "darkblue",
+     main = "Modelo regresión logística",
+     ylab = "P(Adquiere Producto = 1 | Ingresos)",
+     xlab = "Ingresos mensuales (k)", pch = 20)
+
+curve(predict(modelo, newdata = data.frame(Ingresos_mensuales_k = x), type = "response"),
+      from = min(Ingresos$Ingresos_mensuales_k), 
+      to = max(Ingresos$Ingresos_mensuales_k), 
+      col = "firebrick", lwd = 2.5, add = TRUE)
+```
+
+
+Generamos las predicciones de probabilidad para el conjunto de prueba "test" usando el modelo de regresión logística.
+```{r}
+# Paso 1: Calcular las probabilidades para los datos de prueba
+probabilidades <- predict(modelo, newdata = test, type = "response")
+head(probabilidades)
+
+# Paso 2: Convertir probabilidades en clases 0 o 1 con umbral 0.5
+predicciones_clase <- ifelse(probabilidades < 0.5, 0, 1)
+head(predicciones_clase)
+```
+
+Generamos la matriz de confunsiones y calculamos métricas.
+
+![](Matriz.jpg)
+
+  - Accuracy: Proporción de predicciones correctas sobre el total de casos. $\frac{TP+TN}{TP+TN+FP+FN}$
+
+  - Precision: Proporción de predicciones positivas correctas sobre el total de predicciones positivas. $\frac{TP}{TP+FP}$
+  
+  - recall: Proporción de casos positivos detectados correctamente. $\frac{TP}{TP+FN}$
+  
+  - F1 score: Media armónica entre precisión y recall. $2*\frac{Precision*Recall}{Precision+Recall}$
+  
+```{r}
+# Hay que asegurarse que ambas estén como factores
+y_real <- factor(test$Adquiere_producto, levels = c(0, 1))
+y_pred  <- factor(predicciones_clase, levels = c(0, 1))
+
+# Matriz de confusión y métricas
+conf_matrix <- confusionMatrix(data = y_pred, reference = y_real, positive = "1")
+print(conf_matrix$table)
+
+# Métricas individuales
+accuracy  <- conf_matrix$overall["Accuracy"] # Proporción total de predicciones correctas.
+precision <- conf_matrix$byClass["Precision"]
+recall    <- conf_matrix$byClass["Recall"]
+f1        <- conf_matrix$byClass["F1"]
+
+# Imprimir métricas
+cat("Accuracy (Exactitud):", accuracy, "\n")
+cat("Precision (Precisión):", precision, "\n")
+cat("Recall (Sensibilidad):", recall, "\n")
+cat("F1 Score:", f1, "\n")
+```
+
+  - Verdaderos negativos (TN = 57): El modelo predijo correctamente que 57 personas no adquirirían el producto, y efectivamente no lo hicieron.
+  
+  - Verdaderos positivos (TP = 25): El modelo predijo correctamente que 25 personas sí adquirirían el producto, y efectivamente lo hicieron.
+  
+  - Falsos negativos (FN = 8): El modelo predijo que 8 personas no adquirirían el producto, pero en realidad sí lo hicieron.
+  
+  - Falsos positivos (FP = 10): El modelo predijo que 10 personas sí adquirirían el producto, pero en realidad no lo hicieron.
+  
+  - Exactitud (Accuracy = 0.82): El modelo acertó en el 82% de los casos al clasificar correctamente tanto a quienes compraron como a quienes no.
+  
+  - Precisión (Precision = 71.43%): De todas las personas a las que el modelo predijo que sí adquirirían el producto, el 71.43% realmente lo hicieron. Alta precisión implica pocos falsos positivos
+  
+  - Sensibilidad / Recall (Recall = 75.76%): De todas las personas que realmente compraron el producto, el modelo identificó correctamente al 75.76%. Alta sensibilidad implica pocos falsos negativos.
+  
+  - Un F1 Score del 73.5% indica que el modelo tiene un buen balance entre no ofrecer el producto a quien no va a comprar y no dejar pasar oportunidades con potenciales compradores.

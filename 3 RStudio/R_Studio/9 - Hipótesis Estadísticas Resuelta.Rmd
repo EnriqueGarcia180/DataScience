@@ -1,0 +1,316 @@
+---
+title: 'Sesión 22: Hipótesis Estadísticas'
+author: "David Nexticapan Cortes"
+date: "2024-10-02"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+#**Estadístico de Prueba**
+
+Una encuesta de 703 empleados seleccionados al azar, reveló que el 61% de ellos consiguió trabajo por medio de una red de contactos. Calcule el valor del estadístico de prueba  (𝒛,𝒕,𝝌^𝟐) para la aseveración de que la mayoría de los empleados consiguen trabajo por medio de una red de contactos. 
+
+(Ejercicio del slide 10)
+
+Planteamos nuestro juego de hipótesis:
+$$
+H_0: p = 0.50 \\
+H_1: p > 0.50
+$$
+Calculamos el estadístico de prueba para Proporciones:
+(Slide 9)
+$$
+z=\frac{\widehat{p}-p}{\sqrt{\frac{pq}{n}}}
+$$
+```{r}
+
+estadistico_proporciones <- function(p_muestral, p_poblacional, n){
+      # p_muestral: es la proporcion de exitos en la muestra
+      # p_poblacional:  es el valor aseverado de la hipotesis nula (la que tiene la igualdad)  
+      # n: es el tamanio de la muestra
+  
+  z <- round((p_muestral - p_poblacional) / sqrt(p_poblacional * (1 - p_poblacional) / n),2)
+  
+  cat("Estadistico de Prueba para Proporciones z =", z)
+
+  }
+estadistico_proporciones(0.61, 0.50, 703)
+```
+
+Utilice aseveraciones para expresar la hipótesis nula (H0) y alternativa (H1) en cada uno de los siguientes casos. 
+
+Luego, calcula el valor del Estadístico de Prueba (𝒛,𝒕,𝝌^𝟐)
+
+Caso 1: La aseveración es que la proporción de adultos que fumaron un cigarrillo la semana pasada es menor que 0.25, y los estadísticos de muestra incluyen 𝑛=1018 sujetos, de los cuales 224 dicen que fumaron un cigarrillo la semana pasada. 
+
+(Ejercicio del slide 11)
+
+$$
+H_0: p =  0.25 \\
+H_1: p < 0.25 
+$$
+# Aqui se ve que es de cola izquierda porque  p < 0.25  en la hipotesis Alternativa
+# Hipotesis alternativa es la que estoy aseverando en este ejercicio
+# Hipotesis nula es la que se opone a la aseveracion
+
+```{r}
+estadistico_proporciones(224/1018, 0.25, 1018)
+```
+# Salio negativo porque en la hipotesis alternativa tengo una prueba de cola izquierda.
+# Este es el Estadistico de Prueba que voy a comparar con el Valor Critico (slide 13), si cae dentro de la region de rechazo rechazamos hipotesis nula en favor de la alternativa.
+# Otro metodo es por medio del P-Value:,Calculo el Area a la izquierda del estadistico de prueba y lo comparo con el P-Value, si (P <= alpha) entonces se rechaza la hipotesis nula.
+
+
+
+La mayoría de las demandas por negligencia se retiran o se rechazan, y una muestra aleatoria de 500 demandas incluye 349 que fueron retiradas o rechazadas.
+
+(Ejercicio del slide 11)
+
+$$
+H_0: p = 0.50 \\
+H_1: p > 0.50
+$$
+# De la hipotesis alternativa vemos que es una prueba de cola derecha 
+
+```{r}
+estadistico_proporciones(349/500, 0.50, 500)
+```
+# El Estadistico de Prueba obtenido arriba es un valor muy alto, por ejemplo, con un nivel de Significancia alpha=0.05 tenemos un Valor Critico de z=1.645 (cola derecha) por lo que podemos concluir aqui que el Estadistico de Prueba cae dentro de la region de rechazo y por lo tanto se rechaza la hipotesis nula en favor de la alternativa ("mayoría de las demandas por negligencia se retiran o se rechazan")
+
+_____________________________________________________________________________________________________
+
+
+
+## Región Crítica, Nivel de Significancia, Valor Crítico y P - Value
+
+**Actividad 5** 
+
+(Slide 15 presentacion 9 - Sesión Pruebas de Hipótesis.pptx)
+
+Con un nivel de significancia de $\alpha=0.05$, calcule los valores $z$ críticos para cada una de las siguientes hipótesis alternativas.
+
+Caso 1: $p \neq 0.5$ (de manera que la región crítica está en ambas colas de la distribución normal)
+
+```{r}
+alpha1 <- 0.05
+# Valor critico (z)
+v_critico1_izq <- qnorm(alpha1/2, lower.tail = T)
+  # La funcion qnorm que toma alpha como input y devuelve el valor de z (el estadistico de prueba)
+  # Quantil de la Distribucion Normal. Lower.Tail=TRUE significa es cola izquierda. Calcula el area a la Izquierda. alpha/2 porque es de dos colas.
+v_critico1_der <- qnorm(1 - alpha1/2, lower.tail = T)
+  # Por medio del Complemento (1-alpha/2) obtenemos el Area por la izquierda hasta el alpha/2 de la cola derecha (como en las tablas)
+v_critico1_der_2 <- qnorm(alpha1/2, lower.tail = F)
+  # Otra opcion es usar lower.tail=FALSE para que calcule la derecha:  
+v_critico1_izq; v_critico1_der
+
+# Función de la densidad normal estándar
+curve(dnorm(x), from = -3.5, to = 3.5, col = "blue", lwd = 2, xlab = "Valores de Z", ylab = "Densidad", main = "Distribución Normal Estándar")
+
+# Agregamos una linea vertical en los valores críticos.
+abline(v = v_critico1_izq, col = "red", lwd = 2, lty = 2)
+  # v: vertical, h: horizontal
+  # lty: line type 0=blank, 1=solid (default), 2=dashed, 3=dotted, 4=dotdash, 5=longdash, 6=twodash
+abline(v = v_critico1_der, col = "red", lwd = 2, lty = 2)
+
+# Rellenar el área a la izquierda del valor crítico por medio de un POLIGONO
+x_sombreado <- seq(-3.5, v_critico1_izq, length.out = 100)
+y_sombreado <- dnorm(x_sombreado)
+polygon(c(-3.5, x_sombreado, v_critico1_izq), c(0, y_sombreado, 0), col = "lightblue") 
+  # El poligono se forma de Vertices por eso hay que cerrarlo en x = v_critico1_izq, y = 0.
+
+# Rellenar el área a la derecha del valor crítico por medio de un POLIGONO
+x_sombreado1 <- seq(v_critico1_der, 3.5, length.out = 100)
+y_sombreado1 <- dnorm(x_sombreado1)
+polygon(c(v_critico1_der, x_sombreado1, 3.5), c(0, y_sombreado1, 0), col = "lightblue")
+
+# Texto para el valor crítico
+text(x = v_critico1_izq, y = 0.02, labels = paste0("Valor crítico: ", round(v_critico1_izq, 3)), pos = 4, col = "red", cex = 0.7) 
+  # pos = 4: Las posiciones son como las manecillas del reloj: 1-abajo, 2-izquierda, 3-arriba, 4-derecha.
+text(x = v_critico1_der, y = 0.02, labels = paste0("Valor crítico: ", round(v_critico1_der, 3)), pos = 2, col = "red", cex = 0.7)
+
+```
+
+Caso 2: $p < 0.5$ (de manera que la región crítica está en la cola izquierda de la distribución normal)
+
+```{r}
+alpha2 <- 0.05
+# Valor critico (z)
+v_critico2 <- qnorm(alpha2, lower.tail = T)
+v_critico2 
+
+# Función de la densidad normal estándar
+curve(dnorm(x), from = -3.5, to = 3.5, col = "blue", lwd = 2, xlab = "Valores de Z", ylab = "Densidad", main = "Distribución Normal Estándar")
+
+# Agregamos una linea vertical en los valores críticos.
+abline(v = v_critico2, col = "red", lwd = 2, lty = 2)
+
+# Rellenar el área a la izquierda del valor crítico por medio de un POLIGONO
+x_sombreado <- seq(-3.5, v_critico2, length.out = 100)
+y_sombreado <- dnorm(x_sombreado)
+polygon(c(-3.5, x_sombreado, v_critico2), c(0, y_sombreado, 0), col = "lightblue") 
+
+
+# Texto para el valor crítico
+text(x = v_critico2, y = 0.02, labels = paste0("Valor crítico: ", round(v_critico2, 3)), pos = 4, col = "red", cex = 0.7) 
+
+```
+
+Caso 3: $p > 0.5$ (de manera que la región crítica está en la cola derecha de la distribución normal)
+
+```{r}
+alpha3 <- 0.05
+# Valor critico (z)
+v_critico3 <- qnorm(1 - alpha3, lower.tail = T)
+v_critico3
+
+# Función de la densidad normal estándar
+curve(dnorm(x), from = -3.5, to = 3.5, col = "blue", lwd = 2, xlab = "Valores de Z", ylab = "Densidad", main = "Distribución Normal Estándar")
+
+# Agregamos una linea vertical en los valores críticos.
+abline(v = v_critico3, col = "red", lwd = 2, lty = 2)
+
+# Rellenar el área a la izquierda del valor crítico por medio de un POLIGONO
+x_sombreado <- seq(-3.5, v_critico3, length.out = 100)
+y_sombreado <- dnorm(x_sombreado)
+polygon(c(-3.5, x_sombreado, v_critico3), c(0, y_sombreado, 0), col = "lightblue") 
+
+
+# Texto para el valor crítico
+text(x = v_critico3, y = 0.02, labels = paste0("Valor crítico: ", round(v_critico3, 3)), pos = 2, col = "red", cex = 0.7) 
+```
+
+**Actividad 6**
+
+(Slide 16 presentacion 9 - Sesión Pruebas de Hipótesis.pptx)
+
+Calcule los valores críticos en cada caso, suponga que se aplica la distribución normal y haga una representación gráfica.
+
+
+Caso 1: Prueba de cola derecha; $\alpha = 0.01$
+```{r}
+alpha4 = 0.01
+# Valor critico (z)
+critico_derecho <- qnorm(1-alpha4, lower.tail = TRUE)
+print(critico_derecho)
+
+# Función de la densidad normal estándar
+curve(dnorm(x), from = -3.5, to = 3.5, col = "blue", lwd = 2, xlab = "Valores de Z", ylab = "Densidad", main = "Distribución Normal Estándar")
+
+# Rellenar el área a la izquierda del valor crítico
+x_sombreado <- seq(critico_derecho, 3.5, length.out = 100)
+y_sombreado <- dnorm(x_sombreado)
+polygon(c(critico_derecho, x_sombreado, 3.5), c(0, y_sombreado, 0), col = "lightblue")
+
+# Agregar linea vertical con el valor crítico en la gráfica
+abline(v = critico_derecho, col = "red", lwd = 2, lty = 2)
+
+# Texto para el valor crítico
+text(x = critico_derecho, y = 0.02, labels = paste0("Valor crítico: ", round(critico_derecho, 3)), pos = 2, col = "red", cex = 0.7)
+```
+
+Caso 2: Prueba de dos colas; $\alpha=0.10; H_1:p\neq0.17$
+```{r}
+alpha5 = 0.10
+# Valor critico (z)
+critico_izquierdo <- qnorm(alpha5/2, lower.tail = TRUE)
+print(critico_izquierdo)
+critico_derecho <- qnorm(1-alpha5/2, lower.tail = TRUE)
+print(critico_derecho)
+
+# Función de la densidad normal estándar
+curve(dnorm(x), from = -3.5, to = 3.5, col = "blue", lwd = 2, xlab = "Valores de Z", ylab = "Densidad", main = "Distribución Normal Estándar")
+
+# Rellenar el área a la derecha del valor crítico
+x_sombreado <- seq(critico_derecho, 3.5, length.out = 100)
+y_sombreado <- dnorm(x_sombreado)
+polygon(c(critico_derecho, x_sombreado, 3.5), c(0, y_sombreado, 0), col = "lightblue")
+
+# Rellenar el área a la izquierda del valor crítico
+x_sombreado <- seq(-3.5, critico_izquierdo, length.out = 100)
+y_sombreado <- dnorm(x_sombreado)
+polygon(c(-3.5, x_sombreado, critico_izquierdo), c(0, y_sombreado, 0), col = "lightblue")
+
+# Agregar lineas verticales con los valores críticos en la gráfica
+abline(v = critico_derecho, col = "red", lwd = 2, lty = 2)
+abline(v = critico_izquierdo, col = "red", lwd = 2, lty = 2)
+
+# Texto para el valor crítico
+text(x = critico_derecho, y = 0.02, labels = paste0("Valor crítico: ", round(critico_derecho, 2)), pos = 2, col = "red", cex = 0.7)
+text(x = critico_izquierdo, y = 0.02, labels = paste0("Valor crítico: ", round(critico_izquierdo, 2)), pos = 4, col = "red", cex = 0.7)
+```
+
+Caso 3: Prueba de cola Izquierda: $\alpha=0.02; H_1:p<0.19$
+```{r}
+alpha6 = 0.02
+# Valor critico (z)
+critico_izquierdo <- qnorm(alpha6, lower.tail = TRUE)
+
+# Función de la densidad normal estándar
+curve(dnorm(x), from = -3.5, to = 3.5, col = "blue", lwd = 2, xlab = "Valores de Z", ylab = "Densidad", main = "Distribución Normal Estándar")
+
+# Rellenar el área a la izquierda del valor crítico
+x_sombreado <- seq(-3.5, critico_izquierdo, length.out = 100)
+y_sombreado <- dnorm(x_sombreado)
+polygon(c(-3.5, x_sombreado, critico_izquierdo), c(0, y_sombreado, 0), col = "lightblue")
+
+# Agregar linea vertical con el valor crítico en la gráfica
+abline(v = critico_izquierdo, col = "red", lwd = 2, lty = 2)
+
+# Texto para el valor crítico
+text(x = critico_izquierdo, y = 0.02, labels = paste0("Valor crítico: ", round(critico_izquierdo, 2)), pos = 4, col = "red", cex = 0.7)
+```
+
+
+**Actividad 7**  **P_value**
+
+# pnorm()
+
+(Slide 16 presentacion 9 - Sesión Pruebas de Hipótesis.pptx)
+
+Determine si las condiciones planteadas dan por resultado una prueba de cola derecha, de cola izquierda o de dos colas; despúes utilice la imagen adjunta para calcular el p - value, luego tome una decisión respecto a la hipótesis nula.
+
+Se utiliza un nivel de significancia de $𝛼=0.05$ para probar la aseveración de que $𝑝>0.25$. Considera que los datos muestrales dan por resultado un estadístico de prueba de $𝑧=1.18$.
+
+# Criterio: 
+Rechace 𝐻_0 si el valor de 𝑃≤𝛼 (donde 𝛼 es el nivel de significancia)
+No rechace 𝐻_0 si el valor 𝑃>𝛼
+
+
+```{r}
+
+# Criterio: 
+# Rechace 𝐻_0 si el valor de 𝑃≤𝛼 (donde 𝛼 es el nivel de significancia)
+# No rechace 𝐻_0 si el valor 𝑃>𝛼
+
+
+alpha7 = 0.05
+z = 1.18
+# Tenemos una prueba de cola derecha
+p_value <- pnorm(z, lower.tail = FALSE)
+# la funcion pnorm usa el valor z como input y devuelve el valor p. A diferencia de la funcion qnorm que toma alpha como input y devuelve el valor de z (el estadistico de prueba)
+print(p_value)
+c("El area de p para el estadistico de prueba z es p =", round(p_value, 3))
+
+if (p_value <= alpha7){
+  print("dado que 𝑃≤𝛼 entonces SI rechazamos la hipotesis nula H_0 en favor de la alternativa H_1.")
+} else if (p_value > alpha7){
+  print("dado que 𝑃>𝛼 entonces NO rechazamos la hipotesis nula.")
+}
+
+```
+
+Se utiliza un nivel de significancia de 𝛼=0.05 para probar la aseveración de que 𝑝≠0.25, y los datos muestrales dan por resultado un estadístico de prueba de 𝑧=2.34.
+
+```{r}
+# Tenemos una prueba de dos colas
+p_value <- 2 * pnorm(2.34, lower.tail = FALSE)
+print(p_value)
+c("El area de p para el estadistico de prueba z es p =", round(p_value, 3)) 
+
+if (p_value <= alpha7){
+  print("dado que 𝑃≤𝛼 entonces SI rechazamos la hipotesis nula H_0 en favor de la alternativa H_1.")
+} else if (p_value > alpha7){
+  print("dado que 𝑃>𝛼 entonces NO rechazamos la hipotesis nula.")
+}
+```

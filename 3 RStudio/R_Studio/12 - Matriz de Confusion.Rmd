@@ -1,0 +1,58 @@
+---
+title: "Matriz de Confusión"
+author: "David Nexticapan Cortes"
+date: "2025-04-20"
+output: html_document
+---
+
+```{r}
+y_real <- c(0,1,1,1,0,1,0,1,0,1)
+y_predicho <- c(0,1,1,1,1,1,0,1,0,1)
+```
+
+Cargamos la siguiente librería
+```{r}
+library(caret) # Para la matriz de confusión.
+```
+
+Generamos la matriz de confusión
+```{r}
+# Convertimos a factor nuestras vecctores
+y_real <- factor(y_real, levels = c("0", "1"), labels = c("Negativo", "Positivo"))
+y_predicho <- factor(y_predicho, levels = c("0", "1"), labels = c("Negativo", "Positivo"))
+
+# Matriz de confusión
+conf_matrix <- confusionMatrix(data = y_predicho, reference = y_real, positive = "Positivo")
+
+# Imprimimos la matriz de confusión
+print(conf_matrix$table)
+```
+    - Verdaderos negativos (TN = 3): El modelo predijo correctamente que 3 personas no tienen la enfermedad, y efectivamente no la tienen.
+  
+  - Verdaderos positivos (TP = 6): El modelo predijo correctamente que 6 personas tienen la enfermedad, y efectivamente la tienen.
+  
+  - Falsos negativos (FN = 0): El modelo predijo incorrectamente que 0 personas no tienen la enfermedad, pero en realidad sí la tienen. No hay falsos negativos. 
+  
+  - Falsos positivos (FP = 1): El modelo predijo incorrectamente que 1 persona tiene la enfermedad, pero en realidad no la tiene.
+
+Calculamos las métricas
+```{r}
+# Métricas individuales
+accuracy <- conf_matrix$overall["Accuracy"]
+precision <- conf_matrix$byClass["Precision"]
+recall <- conf_matrix$byClass["Recall"]
+f1 <- conf_matrix$byClass["F1"]
+
+# Imprimir métricas
+cat("Accuracy (Exactitud):", accuracy, "\n")
+cat("Precision (Precisión):", precision, "\n")
+cat("Recall (Sensibilidad):", recall, "\n")
+cat("F1 Score:", f1, "\n")
+```
+  - Exactitud (Accuracy = 0.90): El modelo acertó en el 90% de los casos al clasificar correctamente tanto a quienes tienen la enfermedad como quienes no la tienen.
+  
+  - Precisión (Precision = 0.8571): De todas las personas a las que el modelo predijo que sí tienen la enfermedad, el 85.71% realmente la tienen. Alta precisión implica pocos falsos positivos
+  
+  - Sensibilidad / Recall (Recall = 1): De todas las personas que realmente tienen la enfermedad, el modelo identificó correctamente al 100%. No hay falsos negaativos.
+  
+  - Un F1 Score del 92.31% indica que el modelo tiene un buen balance entre detectar a los que sí tienen la enfermedad como a los que no.

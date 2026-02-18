@@ -1,0 +1,277 @@
+---
+title: "Regresión Logística"
+author: "David Nexticapan Cortes"
+date: "2025-04-12"
+output: html_document
+---
+
+Cargamos librearías
+```{r, warning=FALSE, message=FALSE}
+library(readxl)
+library(dplyr)
+library(ggplot2)
+library(caTools) # Para sample.split
+library(caret)
+library(purrr) # La función map
+library(patchwork) # Ordenar gráficos ggplot2
+```
+
+Cargamos la base de datos
+```{r}
+df_billetes <- read_excel("Billetes Falsos.xlsx")
+head(df_billetes)
+```
+
+  - is_genuine: Variable categórica (booleana) que indica si el objeto es auténtico (True) o falso (False).
+  
+  - diagonal: Longitud de la diagonal del objeto
+  
+  - height_left: Altura del lado izquierdo del objeto. Puede haber ligeras diferencias con el lado derecho.
+  
+  - height_right: Altura del lado derecho del objeto.
+  
+  - margin_low: Margen inferior.
+  
+  - margin_up: Margen superior.
+  
+  - length: Longitud horizontal del objeto (de lado a lado).
+
+**Análisis Exploratorio**
+```{r}
+# Transformamos los datos
+df_billetes$is_genuine <- ifelse(df_billetes$is_genuine == "True", 1, 0)
+# 0: Billete Falso
+# 1: Billete Genuino
+```
+
+```{r}
+colSums(is.na(df_billetes)) # Hay 37 missing values en margin_low.
+```
+
+```{r}
+# Asegúrate de que la variable de clase sea un factor
+df_billetes$is_genuine <- as.factor(df_billetes$is_genuine)
+
+# Lista de variables numéricas a graficar
+variables <- c("diagonal", "height_left", "height_right", "margin_low", "margin_up", "length")
+
+# Crear y mostrar los gráficos usando map()
+plots <- map(variables, function(var) {
+  ggplot(df_billetes, aes_string(x = var, fill = "is_genuine")) +
+    geom_histogram(aes(y = after_stat(density)), position = "identity", alpha = 0.5, bins = 30, color = "black") +
+    geom_density(aes_string(color = "is_genuine"), fill = NA, size = 1.2) +
+    labs(title = paste("Distribución de", var)) +
+    theme_minimal()
+})
+
+# Mostrar todos los gráficos en una sola vista (opcional)
+library(patchwork)
+wrap_plots(plots, ncol = 2)
+```
+
+
+```{r}
+resumen <- df_billetes %>% 
+  group_by(is_genuine) %>% 
+  summarise(Total = n(),
+            Mínimo = min(length),
+            Q1 = quantile(length, 0.25),
+            Mediana = median(length),
+            Media = mean(length),
+            Q3 = quantile(length, 0.75),
+            Máximo = max(length)
+            ) %>% 
+  print()
+# 500 Falsos
+# 1000 Genuinos
+```
+
+```{r}
+boxplot(length ~ is_genuine, data = df_billetes,
+        col = c("lightblue", "lightgreen"),
+        names = c("Falso", "Genuino"),
+        main = "Boxplot por Clase",
+        xlab = "Clase",
+        ylab = "Longitud")
+```
+
+Buscamos los outliers de la clase "Sí adquiere el producto"
+```{r}
+# Información de Clase False
+boxplot.stats(df_billetes$length[df_billetes$is_genuine == 0])
+
+# Información de Clase True
+boxplot.stats(df_billetes$length[df_billetes$is_genuine == 1])
+
+# Buscamos índices de los outliers de Clase False
+outliers_clase_False <- boxplot.stats(df_billetes$length[df_billetes$is_genuine == 0])$out
+indices_outliers_clase_false <- which(df_billetes$length %in% outliers_clase_False & df_billetes$is_genuine == 0)
+print(indices_outliers_clase_false)
+
+# Buscamos índices de los outliers de Clase True
+outliers_clase_T <- boxplot.stats(df_billetes$length[df_billetes$is_genuine == 1])$out
+indices_outliers_clase_T <- which(df_billetes$length %in% outliers_clase_T & df_billetes$is_genuine == 1)
+print(indices_outliers_clase_T)
+```
+
+Planteamos el siguiente juego de hipótesis
+$\mu_1:$ La media de length de los billetes falsos.
+$\mu_2:$ La media de length de los billetes genuinos.
+
+$$
+H_0: \mu_1 = \mu_2 \\
+H_1: \mu_1 \neq \mu_2
+$$
+
+```{r}
+t.test(length ~ is_genuine, 
+       data = df_billetes,
+       alternative = "two.sided",
+       mu = 0,
+       conf.level = 0.95) # Se rechaza la hipótesis nula. 
+```
+
+Tenemos 3 cosas que confirman que podemos aplicar el modelo logístico.
+
+**Aplicación del Modelo**
+
+Dividimos nuestros datos en "Entrenamiento" y "Prueba"
+```{r}
+set.seed(42)
+barajeado <- slice_sample(df_billetes, prop = 1)
+split <- sample.split(barajeado$is_genuine, SplitRatio = 0.8) # Vector lógico 
+train <- subset(barajeado, split == TRUE)
+head(train)
+test <- subset(barajeado, split == FALSE)
+head(test)
+```
+
+```{r}
+# Ajuste del modelo de regresión logística
+modelo <- glm(is_genuine ~ length, data = train, family = binomial)
+
+# Resumen del modelo
+summary(modelo)
+```
+  - El modelo queda de la siguiente forma:
+
+$$
+log(\frac{p}{1-p})=-727.4625+6.4671*length
+$$
+
+  - Ambos coeficientes $\beta_0$ y $\beta_1$ son significativos, ya que sus p_values son menores a 0.05. Esto indica que hay evidencia estadística para concluir que el length tiene un efecto sobre la probabilidad de tener un billete genuino.
+  
+  - El coeficiente $\beta_1 = 6.4671$ indica que por cada aumento de 1 unidad en la longitud del billete, el logit de que el billete sea genuino aumenta en 6.4671.
+  
+  - En términos de odds exp(6.4671) = 643.6145 Es decir, por cada 1 unidad adicional en la longitud, la razón de que el billete sea genuino se multiplica por 644 veces. Una señal muy fuerte de que la longitud está altamente asociada con autenticidad.
+  
+  - El intercepto del modelo es -727.4625, lo que representa el logit de que un billete con length igual a cero sea genuino. No es una longitud realista en este contexto, el intercepto no tiene una interpretación práctica directa, pero es necesario para ajustar el modelo.
+
+Calculamos el intervalo de confianza para los coeficientes:
+```{r, message=FALSE}
+# Calcular el intervalo de confianza del 95%
+intervalo_ci <- confint(modelo, level = 0.95)
+print(intervalo_ci)
+```
+
+  - El intervalo de confianza para el intercepto es [ -839.499966, -630.815844]. Esto significa que, con un 95% de confianza, el valor verdadero del intercepto se encuentra dentro de este rango.
+  
+  - El intervalo de confianza para el coeficiente de length es [5.608947, 7.461912]. Esto indica que, con un 95% de confianza, el efecto de length sobre la probabilidad de tener un billete genuino se encuentra dentro de este rango.
+
+
+Realizamos nuestras predicciones
+```{r}
+# Realizamos nuestras predicciones:
+predicciones <- predict(modelo, newdata = train, type = "response")
+head(predicciones)
+# type = "response": Esto indica que deseas obtener las probabilidades predichas (valores entre 0 y 1).
+```
+
+Realziamos nuestra clasificación
+```{r}
+# Clasificación basada en el umbral de 0.5
+clasificacion <- ifelse(predicciones < 0.5, 0, 1)
+
+# Mostrar la clasificación
+head(clasificacion)
+```
+
+Realizamos el gráfico del modelo:
+
+```{r}
+df_billetes$is_genuine <- as.character(df_billetes$is_genuine)
+df_billetes$is_genuine <- as.numeric(df_billetes$is_genuine)
+
+plot(df_billetes$is_genuine ~ df_billetes$length, 
+     data = df_billetes, col = "darkblue",
+     main = "Modelo regresión logística",
+     ylab = "P(Billete = Genuino | length)",
+     xlab = "length", pch = 20)
+
+curve(predict(modelo, newdata = data.frame(length = x), type = "response"),
+      from = min(df_billetes$length), 
+      to = max(df_billetes$length), 
+      col = "firebrick", lwd = 2.5, add = TRUE)
+```
+
+
+Generamos las predicciones de probabilidad para el conjunto de prueba "test" usando el modelo de regresión logística.
+```{r}
+# Paso 1: Calcular las probabilidades para los datos de prueba
+probabilidades <- predict(modelo, newdata = test, type = "response")
+head(probabilidades)
+
+# Paso 2: Convertir probabilidades en clases 0 o 1 con umbral 0.5
+predicciones_clase <- ifelse(probabilidades < 0.5, 0, 1)
+head(predicciones_clase)
+```
+
+Generamos la matriz de confunsiones y calculamos métricas.
+
+![](Matriz.jpg)
+
+  - Accuracy: Proporción de predicciones correctas sobre el total de casos. $\frac{TP+TN}{TP+TN+FP+FN}$
+
+  - Precision: Proporción de predicciones positivas correctas sobre el total de predicciones positivas. $\frac{TP}{TP+FP}$
+  
+  - recall: Proporción de casos positivos detectados correctamente. $\frac{TP}{TP+FN}$
+  
+  - F1 score: Media armónica entre precisión y recall. $2*\frac{Precision*Recall}{Precision+Recall}$
+  
+```{r}
+# Hay que asegurarse que ambas estén como factores
+y_real <- factor(test$is_genuine, levels = c(0, 1))
+y_pred  <- factor(predicciones_clase, levels = c(0, 1))
+
+# Matriz de confusión y métricas
+conf_matrix <- confusionMatrix(data = y_pred, reference = y_real, positive = "1")
+print(conf_matrix$table)
+
+# Métricas individuales
+accuracy  <- conf_matrix$overall["Accuracy"] # Proporción total de predicciones correctas.
+precision <- conf_matrix$byClass["Precision"]
+recall    <- conf_matrix$byClass["Recall"]
+f1        <- conf_matrix$byClass["F1"]
+
+# Imprimir métricas
+cat("Accuracy (Exactitud):", accuracy, "\n")
+cat("Precision (Precisión):", precision, "\n")
+cat("Recall (Sensibilidad):", recall, "\n")
+cat("F1 Score:", f1, "\n")
+```
+
+  - Verdaderos negativos (TN = 95): El modelo predijo correctamente que 95 billetes eran falsos, y efectivamente lo eran.
+  
+  - Verdaderos positivos (TP = 190): El modelo predijo correctamente que 190 billetes eran genuinos, y efectivamente lo eran.
+  
+  - Falsos negativos (FN = 10): El modelo predijo que 10 billetes eran falsos, pero en realidad eran genuinos.
+  
+  - Falsos positivos (FP = 5): El modelo predijo que 5 billetes eran genuinos, pero en realidad eran falsos.
+  
+  - Exactitud (Accuracy = 0.95): El modelo tuvo un 95% de aciertos en la clasificación total de billetes (tanto genuinos como falsos).
+  
+  - Precisión (Precision = 97.44%): De todos los billetes que el modelo clasificó como genuinos, el 97.44% realmente lo eran. Alta precisión implica pocos falsos positivos (poca confusión entre falsos y genuinos).
+  
+  - Sensibilidad / Recall (Sensibilidad = 95%): De todos los billetes genuinos reales, el modelo identificó correctamente el 95%. Alta sensibilidad implica pocos falsos negativos (no se le escapan billetes genuinos).
+  
+  - F1 Score de 96.2% indica un excelente equilibrio entre identificar billetes genuinos correctamente y no confundir billetes falsos como genuinos.

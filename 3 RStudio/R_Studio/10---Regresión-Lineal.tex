@@ -1,0 +1,1093 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Regresión Lineal Simple},
+  pdfauthor={David Nexticapan Cortes},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Regresión Lineal Simple}
+\author{David Nexticapan Cortes}
+\date{2025-03-08}
+
+\begin{document}
+\maketitle
+
+Cargamos librearías
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(readxl)}
+\FunctionTok{library}\NormalTok{(ggplot2)}
+\FunctionTok{library}\NormalTok{(dplyr)}
+\FunctionTok{library}\NormalTok{(gridExtra) }\CommentTok{\# Forma de organizar los gráficos.}
+\FunctionTok{library}\NormalTok{(GGally)}
+\FunctionTok{library}\NormalTok{(corrplot)}
+\FunctionTok{library}\NormalTok{(car) }\CommentTok{\# qqPlot de los residuales.}
+\FunctionTok{library}\NormalTok{(lmtest) }\CommentTok{\# Prueba de autocorrelación de DW y prueba de Breusch{-}Pagan}
+\FunctionTok{library}\NormalTok{(nortest) }\CommentTok{\# Prueba de KS}
+\FunctionTok{library}\NormalTok{(MASS)}
+\FunctionTok{library}\NormalTok{(caTools) }\CommentTok{\# sample.split}
+\FunctionTok{library}\NormalTok{(tseries) }\CommentTok{\#Prueba de Jarque Bera}
+\end{Highlighting}
+\end{Shaded}
+
+Cargamos la base de datos
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Pulso }\OtherTok{\textless{}{-}} \FunctionTok{read\_excel}\NormalTok{(}\StringTok{"PulsoCardiacoMujeres.xlsx"}\NormalTok{)}
+\FunctionTok{head}\NormalTok{(Pulso)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 6 x 5
+##    Edad Estatura  Peso Cintura Pulso
+##   <dbl>    <dbl> <dbl>   <dbl> <dbl>
+## 1    17     1.63  51.7    67.2    76
+## 2    32     1.69  67.2    82.5    72
+## 3    25     1.58  48.5    66.7    88
+## 4    55     1.58  72      93      60
+## 5    27     1.51  57.2    82.6    72
+## 6    29     1.62  55.4    75.4    68
+\end{verbatim}
+
+\textbf{Análisis Exploratorio}
+
+Verificamos si tenemos la presencia de valores NA
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{colSums}\NormalTok{(}\FunctionTok{is.na}\NormalTok{(Pulso)) }\CommentTok{\# No hay presencia de valores NA}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##     Edad Estatura     Peso  Cintura    Pulso 
+##        0        0        0        0        0
+\end{verbatim}
+
+Realizamos un resumen de estadísticas descriptivas de la variable de
+interés.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{summary}\NormalTok{(Pulso}\SpecialCharTok{$}\NormalTok{Cintura)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   66.70   73.42   81.95   85.03   94.38  126.50
+\end{verbatim}
+
+\begin{itemize}
+\item
+  La mediana del contorno de la cintura es menor que la media, lo que
+  sugiere una asimetría a la derecha.
+\item
+  El 25\% de las mujeres de la muestra tienen una cintura mayor que
+  94.38
+\item
+  Existe una gran diferencia del contorno de la cintura entre el valor
+  mínimo y el valor máximo.
+\end{itemize}
+
+Realizamos un boxplot y análisis de ouliers
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{boxplot}\NormalTok{(Pulso}\SpecialCharTok{$}\NormalTok{Cintura) }\CommentTok{\# No hay presencia de outliers en la variable de interés.}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{10---Regresión-Lineal_files/figure-latex/unnamed-chunk-5-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{boxplot.stats}\NormalTok{(Pulso}\SpecialCharTok{$}\NormalTok{Cintura)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## $stats
+## [1]  66.70  73.25  81.95  94.75 126.50
+## 
+## $n
+## [1] 40
+## 
+## $conf
+## [1] 76.57887 87.32113
+## 
+## $out
+## numeric(0)
+\end{verbatim}
+
+\begin{itemize}
+\item
+  Tenemos el valor del bigote inferior = 66.70 que coincide con el valor
+  mínimo de los datos.
+\item
+  Tenemos el valor del bigote superior = 126.50 que coincide con el
+  valor máximo de los datos.
+\item
+  No hay presencia de outliers en los datos.
+\end{itemize}
+
+Matriz de correlaciones
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{matriz\_corr }\OtherTok{\textless{}{-}} \FunctionTok{cor}\NormalTok{(}\FunctionTok{select\_if}\NormalTok{(Pulso, is.numeric)) }\CommentTok{\# Para filtrar del data Set solo las variables Numericas. En este caso no tiene pero en caso de que tuviera. podria ser: matriz\_corr \textless{}{-} cor(Pulso) y en este caso daria o mismo}
+\NormalTok{matriz\_corr}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##               Edad  Estatura      Peso   Cintura     Pulso
+## Edad     1.0000000 0.1167019 0.5630050 0.6594466 0.3079243
+## Estatura 0.1167019 1.0000000 0.3610981 0.1887012 0.2079803
+## Peso     0.5630050 0.3610981 1.0000000 0.9210571 0.1434836
+## Cintura  0.6594466 0.1887012 0.9210571 1.0000000 0.1327250
+## Pulso    0.3079243 0.2079803 0.1434836 0.1327250 1.0000000
+\end{verbatim}
+
+Diagrama de calor para ver la matriz de correlaciones.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{corrplot}\NormalTok{(matriz\_corr, }\AttributeTok{method =} \StringTok{"color"}\NormalTok{, }\AttributeTok{addCoef.col =} \StringTok{"black"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{10---Regresión-Lineal_files/figure-latex/unnamed-chunk-7-1.pdf}}
+
+\begin{itemize}
+\item
+  Tenemos una correlación positiva muy fuerte entre la cintura y el peso
+  de una mujer.
+\item
+  Tenemos una correlación positiva moderada entre las variables Peso -
+  Edad y Cintura - Edad.
+\item
+  Tenemos una correlación positiva debil entre las demás variables.
+\item
+  No tenemos relaciones negativas o inversas.
+\end{itemize}
+
+Matriz de gráficos de dispersión
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{pairs}\NormalTok{(Pulso, }\AttributeTok{main =} \StringTok{"Matriz de gráficos de dispersión"}\NormalTok{, }\AttributeTok{pch =} \DecValTok{20}\NormalTok{, }\AttributeTok{col =}  \StringTok{"blue"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{10---Regresión-Lineal_files/figure-latex/unnamed-chunk-8-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Es clara la correlación positiva entre el peso y la cintura de una mujer.}
+\CommentTok{\# pch es la forma de los puntos}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{itemize}
+\tightlist
+\item
+  Se observa una relación directamente lineal entre la cintura y el
+  peso. Es la mas evidente.
+\end{itemize}
+
+Histogramas para cada variable
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{variables }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"Edad"}\NormalTok{, }\StringTok{"Estatura"}\NormalTok{, }\StringTok{"Peso"}\NormalTok{, }\StringTok{"Cintura"}\NormalTok{, }\StringTok{"Pulso"}\NormalTok{)}
+
+\CommentTok{\# Configura una ventana de gráficos (ajusta según el número de variables)}
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow =} \FunctionTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{))  }\CommentTok{\# 3 filas, 2 columnas (ajustable)}
+
+\CommentTok{\# Recorremos cada variable para graficarla}
+\ControlFlowTok{for}\NormalTok{ (var }\ControlFlowTok{in}\NormalTok{ variables) \{}
+\NormalTok{  datos }\OtherTok{\textless{}{-}}\NormalTok{ Pulso[[var]] }\CommentTok{\# dos corchetes para tener un arreglo de numeros. Un corchete saca un data frame con los numeros. Necesitamos arreglo de datos para el histograma.}
+  \FunctionTok{hist}\NormalTok{(datos, }\AttributeTok{probability =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{main =} \FunctionTok{paste}\NormalTok{(}\StringTok{"Distribución de"}\NormalTok{, var), }\AttributeTok{xlab =}\NormalTok{ var, }\AttributeTok{col =} \StringTok{"salmon1"}\NormalTok{, }\AttributeTok{breaks =} \FunctionTok{nclass.Sturges}\NormalTok{(datos))}
+  \FunctionTok{lines}\NormalTok{(}\FunctionTok{density}\NormalTok{(datos), }\AttributeTok{col =} \StringTok{"black"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{3}\NormalTok{) }\CommentTok{\# EN COLOR NEGRO linea EMPIRICA}
+  \FunctionTok{curve}\NormalTok{(}\FunctionTok{dnorm}\NormalTok{(x, }\AttributeTok{mean =} \FunctionTok{mean}\NormalTok{(datos), }\AttributeTok{sd =} \FunctionTok{sd}\NormalTok{(datos)), }\AttributeTok{add =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{col =} \StringTok{"blue"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{3}\NormalTok{) }\CommentTok{\# EN COLOR AZUL linea DISTRIBUCION NORMAL}
+\NormalTok{\}}
+\CommentTok{\# paste: Pegar un texto con un numero}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{10---Regresión-Lineal_files/figure-latex/unnamed-chunk-9-1.pdf}}
+
+\textbf{Aplicación del Modelo}
+
+Seleccionamos como nuestra variable de respuesta a ``Peso'' (``y'') y
+nuestra variable predictora a ``Cintura'' (``x'')
+
+Dividir nuestros datos en datos de entrenamiento y datos de prueba. 80\%
+de los datos para Entrenar 20\% de los datos para Probar
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{42}\NormalTok{)}
+
+\CommentTok{\# Barajeamos la base de datos, en caso de que la base de datos venga ordenada por algun criterio.}
+\NormalTok{barajeo }\OtherTok{\textless{}{-}} \FunctionTok{slice\_sample}\NormalTok{(Pulso, }\AttributeTok{prop =} \DecValTok{1}\NormalTok{) }\CommentTok{\# bareajear una proporcion del 100\% o sea a todas.}
+
+\CommentTok{\# Dividimos aleatoriamente los datos en proporcion 80{-}20}
+\NormalTok{split }\OtherTok{\textless{}{-}} \FunctionTok{sample.split}\NormalTok{(barajeo}\SpecialCharTok{$}\NormalTok{Edad, }\AttributeTok{SplitRatio =} \FloatTok{0.8}\NormalTok{) }\CommentTok{\# Vector lógico }
+
+\CommentTok{\# Base de entrenamiento}
+\NormalTok{train }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(barajeo, split }\SpecialCharTok{==} \ConstantTok{TRUE}\NormalTok{)}
+
+\CommentTok{\# Base de Prueba o Testeo}
+\NormalTok{test }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(barajeo, split }\SpecialCharTok{==} \ConstantTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Ajustamos el modelo con los datos de entrenamiento
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{modelo }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(Peso }\SpecialCharTok{\textasciitilde{}}\NormalTok{ Cintura, }\AttributeTok{data =}\NormalTok{ train)}
+\FunctionTok{summary}\NormalTok{(modelo)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = Peso ~ Cintura, data = train)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -12.5478  -5.1178   0.2585   3.6588  17.7889 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) -17.50199    7.08877  -2.469   0.0195 *  
+## Cintura       0.98806    0.07996  12.358 2.67e-13 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 7.145 on 30 degrees of freedom
+## Multiple R-squared:  0.8358, Adjusted R-squared:  0.8303 
+## F-statistic: 152.7 on 1 and 30 DF,  p-value: 2.669e-13
+\end{verbatim}
+
+El modelo ajustado es:
+
+\[
+\hat{Peso} = -17.50199 + 0.98806 *Cintura
+\]
+
+\textbf{Elementos del Modelo:}
+
+test Fisher:
+
+En regresión simple, el test F se utiliza para probar si el modelo con
+la variable explicativa es significativamente mejor que un modelo que
+solo incluye la media. El juego de hipótesis que se plantea es:
+
+\[
+H_0: \beta_1 = 0 \\
+H_1: \beta_1 \neq 0
+\] - En el test de Fisher tenemos un p-value: 2.669e-13 \textless{} 0.05
+se rechaza la hipótesis nula en favor de la alternativa.
+
+\begin{itemize}
+\tightlist
+\item
+  Existe suficiente evidencia estadística para sustentar la aseveración
+  de que al menos una beta es diferente de cero.
+\end{itemize}
+
+Coeficientes:
+
+\begin{itemize}
+\item
+  El p-valor de la variable ``Cintura'' y el intercepto son menores que
+  el nivel de significancia, indicando que son significativas para el
+  modelo.
+\item
+  Intersección (Intercept) = -17.50199: Cuando la variable Cintura = 0,
+  el modelo predice que el peso sería aproximadamente -17.50199 kg. Esta
+  interpretación no tiene sentido práctico, ya que una cintura de 0 cm
+  no es realista. Sin embargo, el intercepto es necesario para calcular
+  los valores ajustados.
+\item
+  Pendiente (Cintura) = 0.98806: Por cada aumento de 1 cm en la cintura,
+  el peso promedio aumenta en 0.98806 kg.
+\end{itemize}
+
+Residuales:
+
+\begin{itemize}
+\item
+  La mediana de los residuos 0.2585 es cercana a 0, lo cual sugiere que
+  el modelo no tiene un sesgo fuerte en la predicción ya que el error
+  típico está cercano a cero.
+\item
+  Aunque el modelo se ajusta bastante bien, hay algunos errores
+  (residuos) un poco grandes.
+\end{itemize}
+
+R-squared
+
+\begin{itemize}
+\tightlist
+\item
+  El modelo explica el 83.58\% de la variabilidad en el peso usando la
+  cintura como predictor. Esto indica un ajuste fuerte.
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Gráfico de dispersión con línea de regresión}
+\FunctionTok{plot}\NormalTok{(train}\SpecialCharTok{$}\NormalTok{Cintura, train}\SpecialCharTok{$}\NormalTok{Peso, }\AttributeTok{col=}\StringTok{\textquotesingle{}blue3\textquotesingle{}}\NormalTok{, }\AttributeTok{pch =} \DecValTok{16}\NormalTok{, }\AttributeTok{xlab =} \StringTok{"Cintura"}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"Peso"}\NormalTok{, }\AttributeTok{main =} \StringTok{"Regresión Lineal: Peso \textasciitilde{} Cintura"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{5}\NormalTok{)}
+\FunctionTok{abline}\NormalTok{(modelo, }\AttributeTok{col=}\StringTok{\textquotesingle{}red\textquotesingle{}}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{10---Regresión-Lineal_files/figure-latex/unnamed-chunk-12-1.pdf}}
+
+\textbf{Verificamos supuestos de e}
+
+Pruebas de Normalidad
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Histograma de los residuales}
+\FunctionTok{hist}\NormalTok{(}\FunctionTok{residuals}\NormalTok{(modelo), }\AttributeTok{probability =}\NormalTok{ T,}\AttributeTok{col=}\StringTok{\textquotesingle{}salmon\textquotesingle{}}\NormalTok{, }\AttributeTok{main=}\StringTok{\textquotesingle{}Histograma de residuos\textquotesingle{}}\NormalTok{, }\AttributeTok{breaks =} \FunctionTok{nclass.Sturges}\NormalTok{(modelo}\SpecialCharTok{$}\NormalTok{residuals))}
+\FunctionTok{lines}\NormalTok{(}\FunctionTok{density}\NormalTok{(}\FunctionTok{residuals}\NormalTok{(modelo)), }\AttributeTok{col =} \StringTok{"black"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{3}\NormalTok{)}
+\FunctionTok{curve}\NormalTok{(}\FunctionTok{dnorm}\NormalTok{(x, }\FunctionTok{mean}\NormalTok{(}\FunctionTok{residuals}\NormalTok{(modelo)), }\FunctionTok{sd}\NormalTok{(}\FunctionTok{residuals}\NormalTok{(modelo))), }\AttributeTok{col =} \StringTok{"red3"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{3}\NormalTok{, }\AttributeTok{add =}\NormalTok{ T)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{10---Regresión-Lineal_files/figure-latex/unnamed-chunk-13-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# QQ{-}NORM}
+\FunctionTok{qqPlot}\NormalTok{(}\FunctionTok{residuals}\NormalTok{(modelo), }\AttributeTok{pch =} \DecValTok{20}\NormalTok{, }\AttributeTok{col =} \StringTok{"black"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{10---Regresión-Lineal_files/figure-latex/unnamed-chunk-14-1.pdf}}
+
+\begin{verbatim}
+## [1] 13  8
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# test de normalidad}
+\FunctionTok{shapiro.test}\NormalTok{(}\FunctionTok{residuals}\NormalTok{(modelo)) }\CommentTok{\# Si hay normalidad en los residuales.}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  residuals(modelo)
+## W = 0.97392, p-value = 0.6137
+\end{verbatim}
+
+\begin{itemize}
+\item
+  Como p-value = 0.6137 \textgreater{} 0.05 no se rechaza la hipótesis
+  nula.
+\item
+  Existe suficiente evidencia estadística para sustentar la aseveración
+  de que los residuales siguen una distribución significativamente
+  normal.
+\end{itemize}
+
+Homocedasticida (Igualdad de varianzas): La igualdad de varianzas se
+espera entre los residuos y los valores ajustados del modelo.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{plot}\NormalTok{(}\FunctionTok{fitted}\NormalTok{(modelo), }\FunctionTok{residuals}\NormalTok{(modelo), }\AttributeTok{col =} \StringTok{\textquotesingle{}blue\textquotesingle{}}\NormalTok{, }\AttributeTok{pch =} \DecValTok{16}\NormalTok{, }\AttributeTok{main =} \StringTok{\textquotesingle{}Fitted vs Residuals\textquotesingle{}}\NormalTok{)}
+\FunctionTok{abline}\NormalTok{(}\AttributeTok{h=}\DecValTok{0}\NormalTok{, }\AttributeTok{col=}\StringTok{\textquotesingle{}red\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{10---Regresión-Lineal_files/figure-latex/unnamed-chunk-16-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# fitted(modelo): Son los valores ajustados o predichos por tu modelo. }
+\CommentTok{\# residuals(modelo): Son los residuos.}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{itemize}
+\tightlist
+\item
+  Como los puntos están dispersos de forma aleatoria arriba y abajo de
+  la línea roja y no hay patrones se sugiere que si hay
+  homocedasticidad.
+\end{itemize}
+
+La Prueba de \textbf{Breusch-Pagan} es una prueba estadística que se
+utiliza para detectar la heterocedasticidad en un modelo de regresión
+lineal. La heterocedasticidad ocurre cuando la varianza de los errores o
+residuos no es constante a lo largo de las observaciones, lo que
+violaría una de las suposiciones básicas de los modelos de regresión
+lineal (homocedasticidad).
+
+\(H_0:\) La varianza de los errores es constante (homocedasticidad)
+\(H_1:\) La varianza de los errores no es constante (heterocedasticidad)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{bptest}\NormalTok{(modelo)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  studentized Breusch-Pagan test
+## 
+## data:  modelo
+## BP = 1.8447, df = 1, p-value = 0.1744
+\end{verbatim}
+
+\begin{itemize}
+\item
+  Como p-value = 0.1744 \textgreater{} 0.05 no se rechaza la hipótesis
+  nula.
+\item
+  Existe suficiente evidencia estadística para sustentar la aseveración
+  de que la varianza de los errores es constante.
+\end{itemize}
+
+El test de \textbf{Jarque Bera} es una prueba de normalidad que evalúa
+si una muestra de datos (en este caso, los residuos del modelo) tiene
+una asimetría (skewness) y una curtosis (kurtosis) cercanas a las de una
+distribución normal.
+
+\(H_0:\) Los residuos siguen una distribución normal (sin sesgo ni
+curtosis excesiva) \(H_1:\) Los residuos no siguen una distribución
+normal (pueden tener sesgo y curtosis fuera de los parámetros normales)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{jarque.bera.test}\NormalTok{(}\FunctionTok{residuals}\NormalTok{(modelo))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Jarque Bera Test
+## 
+## data:  residuals(modelo)
+## X-squared = 0.85534, df = 2, p-value = 0.652
+\end{verbatim}
+
+\begin{itemize}
+\item
+  Como p-value = 0.652 \textgreater{} 0.05 no se rechaza la hipótesis
+  nula,
+\item
+  Existe suficiente evidencia estadística para sustentar la aseveración
+  de que los residuos siguen una distribución normal.
+\end{itemize}
+
+Uno de los supuestos del modelo de regresión lineal es que los residuos
+deben ser independientes entre sí.
+
+La prueba de \textbf{Durbin-Watson} evalúa si existe autocorrelación de
+primer orden en los residuos del modelo de regresión, es decir, si los
+errores están correlacionados entre sí (especialmente entre un error y
+el anterior).
+
+El estadístico de Durbin Watson toma valores entre 0 y 4:
+
+\begin{itemize}
+\item
+  DW ≈ 2 → No hay autocorrelación
+\item
+  DW \textless{} 2 → Autocorrelación positiva
+\item
+  DW \textgreater{} 2 → Autocorrelación negativa
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Prueba de Durbin{-}Watson para autocorrelación de residuos}
+\CommentTok{\# H\_0: No hay autocorrelación en los residuos (es decir, los residuos son independientes entre sí).}
+\CommentTok{\# H\_1: Sí hay autocorrelación en los residuos}
+\FunctionTok{dwtest}\NormalTok{(modelo)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Durbin-Watson test
+## 
+## data:  modelo
+## DW = 2.2082, p-value = 0.7528
+## alternative hypothesis: true autocorrelation is greater than 0
+\end{verbatim}
+
+\begin{itemize}
+\tightlist
+\item
+  Como DW = 2.2082 lo cual está muy cerca de 2, entonces no hay
+  evidencia de autocorrelación significativa. Esto indica que los
+  errores del modelo son independientes.
+\end{itemize}
+
+\textbf{Predicciones}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Predicciones en el conjunto de prueba}
+\NormalTok{predicciones }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(modelo, }\AttributeTok{newdata =}\NormalTok{ test, }\AttributeTok{interval =} \StringTok{"confidence"}\NormalTok{, }\AttributeTok{level =} \FloatTok{0.95}\NormalTok{)}
+
+\CommentTok{\# Guardar las predicciones y los intervalos de confianza en el conjunto de prueba}
+\NormalTok{test}\SpecialCharTok{$}\NormalTok{predicted }\OtherTok{\textless{}{-}}\NormalTok{ predicciones[,}\DecValTok{1}\NormalTok{]}
+\NormalTok{test}\SpecialCharTok{$}\NormalTok{lower }\OtherTok{\textless{}{-}}\NormalTok{ predicciones[,}\DecValTok{2}\NormalTok{]}
+\NormalTok{test}\SpecialCharTok{$}\NormalTok{upper }\OtherTok{\textless{}{-}}\NormalTok{ predicciones[,}\DecValTok{3}\NormalTok{]}
+
+\CommentTok{\# Ver el conjunto de prueba con las nuevas columnas de predicciones}
+\NormalTok{test}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 8 x 8
+##    Edad Estatura  Peso Cintura Pulso predicted lower upper
+##   <dbl>    <dbl> <dbl>   <dbl> <dbl>     <dbl> <dbl> <dbl>
+## 1    17     1.63  51.7    67.2    76      48.9  44.7  53.1
+## 2    25     1.52  50.3    73.6    80      55.2  51.8  58.6
+## 3    55     1.58  72      93      60      74.4  71.6  77.1
+## 4    27     1.51  57.2    82.6    72      64.1  61.4  66.8
+## 5    40     1.49  42.4    67.8    80      49.5  45.4  53.6
+## 6    22     1.54  55.9    75.5    64      57.1  53.9  60.3
+## 7    29     1.62  55.4    75.4    68      57.0  53.8  60.2
+## 8    23     1.64  49      74.5    72      56.1  52.8  59.4
+\end{verbatim}
+
+\textbf{Valores Influyentes}
+
+Columnas del output:
+
+dfb.1\_: Este valor muestra el cambio en el coeficiente estimado para la
+variable independiente ``Cintura'' si se elimina la observación en
+cuestión. Si es muy grande (por ejemplo, mayor que 1), puede indicar que
+esa observación tiene un efecto fuerte sobre el modelo.
+
+dfb.Cntr: Similar al anterior, pero para el intercepto. Nos dice cómo
+cambia el intercepto del modelo si eliminamos la observación
+correspondiente.
+
+dffit: Este valor es una medida de cuán ``lejana'' está una observación
+de la predicción ajustada para su valor. Un valor alto de dffit indica
+que esa observación puede estar alejándose de la relación general del
+modelo. Valores mayores a 2 o 3 suelen ser motivo de preocupación.
+
+cov.r: Esta columna mide el cambio en la covarianza del modelo cuando se
+elimina una observación. Un valor cercano a 1 sugiere que la observación
+tiene un fuerte impacto en la covarianza.
+
+cook.d: El estadístico de Cook (cook.d) es una medida que evalúa la
+influencia de una observación en el modelo de regresión en general.
+Básicamente, mide cuánto cambiarían los resultados del modelo si esa
+observación fuera eliminada. Si el valor de Cook es grande (generalmente
+mayor que 1), indica que esa observación tiene un gran impacto en los
+resultados del modelo y podría ser considerada influyente.
+
+hat: La palanca (hat) mide cuán influyente es una observación en la
+predicción de su propio valor dentro del modelo. Si una observación
+tiene una palanca alta, significa que un pequeño cambio en esa
+observación podría afectar mucho su propia predicción, lo que indica que
+tiene un impacto considerable en cómo el modelo la interpreta. Esto
+también puede influir indirectamente en las predicciones de otras
+observaciones, ya que cambia la forma en que el modelo ajusta su
+estructura general.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Evaluamos los valores influyentes}
+\NormalTok{influencia }\OtherTok{\textless{}{-}} \FunctionTok{influence.measures}\NormalTok{(modelo)}
+
+\CommentTok{\# Mostramos las medidas de influencia}
+\FunctionTok{summary}\NormalTok{(influencia)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Potentially influential observations of
+##   lm(formula = Peso ~ Cintura, data = train) :
+## 
+##    dfb.1_ dfb.Cntr dffit cov.r   cook.d hat    
+## 8   0.11  -0.04     0.41  0.80_*  0.07   0.03  
+## 11 -0.02   0.02     0.03  1.37_*  0.00   0.22_*
+## 13 -0.30   0.40     0.65  0.69_*  0.17   0.05  
+## 26 -0.56   0.62     0.66  1.24_*  0.22   0.22_*
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Para identificar puntos con alta influencia, se puede filtrar:}
+\NormalTok{influencia}\SpecialCharTok{$}\NormalTok{summaries[}\FunctionTok{which}\NormalTok{(influencia}\SpecialCharTok{$}\NormalTok{summaries}\SpecialCharTok{$}\NormalTok{cook.d }\SpecialCharTok{\textgreater{}} \DecValTok{1}\NormalTok{),]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## NULL
+\end{verbatim}
+
+Observación 8:
+
+\begin{itemize}
+\item
+  cook.d = 0.80: Esto es un valor elevado. El estadístico de Cook mayor
+  que 1 indica que la observación podría tener un gran impacto en la
+  estimación del modelo.
+\item
+  hat = 0.03: Esto indica que la observación no tiene una gran
+  influencia en la predicción de su propio valor.
+\end{itemize}
+
+Observación 11:
+
+cook.d = 1.37: Este es un valor significativamente mayor que 1, lo que
+sugiere que esta observación tiene un fuerte impacto en el modelo.
+
+hat = 0.22: Este valor de ``hat'' es relativamente alto, lo que indica
+que esta observación tiene una gran influencia sobre las predicciones.
+
+Observación 13:
+
+\begin{itemize}
+\item
+  cook.d = 0.17: Este valor es bajo, lo que sugiere que esta observación
+  no tiene una gran influencia en el modelo.
+\item
+  hat = 0.05: Este valor también es bajo, lo que indica que la
+  observación no tiene una gran influencia sobre la predicción de su
+  propio valor.
+\end{itemize}
+
+Observación 26:
+
+\begin{itemize}
+\item
+  cook.d = 1.24: Este valor es elevado, lo que sugiere que esta
+  observación tiene una gran influencia en el modelo.
+\item
+  hat = 0.22: Similar a la observación 11, esta observación tiene una
+  alta influencia sobre las predicciones.
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Graficar influencia}
+\FunctionTok{plot}\NormalTok{(modelo, }\AttributeTok{which =} \DecValTok{4}\SpecialCharTok{:}\DecValTok{5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{10---Regresión-Lineal_files/figure-latex/unnamed-chunk-22-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{10---Regresión-Lineal_files/figure-latex/unnamed-chunk-22-2.pdf}}
+
+\begin{itemize}
+\item
+  La mayoría de los puntos están concentrados en el centro.
+\item
+  El punto 26 tiene un leverage alto lo que puede estar influenciando
+  mucho en la forma del modelo.
+\item
+  El punto 2 y 13 tienen un residuo grande aunque con leverage bajo.
+  Podríamos sugerir que el modelo no los predijo bien.
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{train[}\FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{13}\NormalTok{,}\DecValTok{26}\NormalTok{),]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 3 x 5
+##    Edad Estatura  Peso Cintura Pulso
+##   <dbl>    <dbl> <dbl>   <dbl> <dbl>
+## 1    59     1.61  73.4   105.     76
+## 2    41     1.72  98.5    99.4    68
+## 3    57     1.61 115.    126.     80
+\end{verbatim}
+
+\#\textbf{Modelo 2}
+
+Probamos el modelo sin la observación 26
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{train2 }\OtherTok{\textless{}{-}}\NormalTok{ train[}\SpecialCharTok{{-}}\DecValTok{26}\NormalTok{,]}
+\end{Highlighting}
+\end{Shaded}
+
+Ajustamos el modelo con los datos de entrenamiento
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{modelo2 }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(Peso }\SpecialCharTok{\textasciitilde{}}\NormalTok{ Cintura, }\AttributeTok{data =}\NormalTok{ train2)}
+\FunctionTok{summary}\NormalTok{(modelo2)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = Peso ~ Cintura, data = train2)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -11.3836  -4.8204  -0.4341   3.4696  18.6940 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) -13.54823    7.72056  -1.755   0.0899 .  
+## Cintura       0.93918    0.08857  10.603 1.72e-11 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 7.083 on 29 degrees of freedom
+## Multiple R-squared:  0.795,  Adjusted R-squared:  0.7879 
+## F-statistic: 112.4 on 1 and 29 DF,  p-value: 1.718e-11
+\end{verbatim}
+
+El modelo ajustado es: \[
+\hat{Peso} = -13.54823 + 0.93918 *Cintura
+\]
+
+\pandocbounded{\includegraphics[keepaspectratio]{Puntos Influyentes.jpg}}
+
+\begin{itemize}
+\item
+  La observación 26 era influyente ya que su presencia hacía que el
+  intercepto fuera más bajo.
+\item
+  El coeficiente de cintura cambió moderadamente, pero relevante si usas
+  el modelo para predicciones.
+\item
+  La observación 26 ayudaba a que el modelo explicara el 83.56\% de la
+  variabilidad y sin él baja al 79.5\%.
+\item
+  En conclusión, la observación 26 si es influyente ya que al quitarla
+  el modelo cambia pero no se destruye y el ajuste sigue siendo bueno
+  pero un poco menos explicativo.
+\item
+  En el test de Fisher tenemos un p-value: 2.669e-13 \textless{} 0.05 se
+  rechaza la hipótesis nula en favor de la alternativa. Es decir,
+  tenemos al menos una beta diferente de cero.
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Gráfico de dispersión con línea de regresión}
+\FunctionTok{plot}\NormalTok{(train2}\SpecialCharTok{$}\NormalTok{Cintura, train2}\SpecialCharTok{$}\NormalTok{Peso, }\AttributeTok{col=}\StringTok{\textquotesingle{}blue3\textquotesingle{}}\NormalTok{, }\AttributeTok{pch =} \DecValTok{16}\NormalTok{, }\AttributeTok{xlab =} \StringTok{"Cintura"}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"Peso"}\NormalTok{, }\AttributeTok{main =} \StringTok{"Regresión Lineal: Peso \textasciitilde{} Cintura"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{5}\NormalTok{)}
+\FunctionTok{abline}\NormalTok{(modelo2, }\AttributeTok{col=}\StringTok{\textquotesingle{}red\textquotesingle{}}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{10---Regresión-Lineal_files/figure-latex/unnamed-chunk-26-1.pdf}}
+
+\textbf{Verificamos supuestos de e}
+
+Pruebas de Normalidad
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Histograma de los residuales}
+\FunctionTok{hist}\NormalTok{(}\FunctionTok{residuals}\NormalTok{(modelo2), }\AttributeTok{probability =}\NormalTok{ T,}\AttributeTok{col=}\StringTok{\textquotesingle{}salmon\textquotesingle{}}\NormalTok{, }\AttributeTok{main=}\StringTok{\textquotesingle{}Histograma de residuos\textquotesingle{}}\NormalTok{, }\AttributeTok{breaks =} \FunctionTok{nclass.Sturges}\NormalTok{(modelo}\SpecialCharTok{$}\NormalTok{residuals))}
+\FunctionTok{lines}\NormalTok{(}\FunctionTok{density}\NormalTok{(}\FunctionTok{residuals}\NormalTok{(modelo2)), }\AttributeTok{col =} \StringTok{"black"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{3}\NormalTok{)}
+\FunctionTok{curve}\NormalTok{(}\FunctionTok{dnorm}\NormalTok{(x, }\FunctionTok{mean}\NormalTok{(}\FunctionTok{residuals}\NormalTok{(modelo2)), }\FunctionTok{sd}\NormalTok{(}\FunctionTok{residuals}\NormalTok{(modelo2))), }\AttributeTok{col =} \StringTok{"red3"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{3}\NormalTok{, }\AttributeTok{add =}\NormalTok{ T)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{10---Regresión-Lineal_files/figure-latex/unnamed-chunk-27-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# QQ{-}NORM}
+\FunctionTok{qqPlot}\NormalTok{(}\FunctionTok{residuals}\NormalTok{(modelo2), }\AttributeTok{pch =} \DecValTok{20}\NormalTok{, }\AttributeTok{col =} \StringTok{"black"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{10---Regresión-Lineal_files/figure-latex/unnamed-chunk-28-1.pdf}}
+
+\begin{verbatim}
+## [1] 13  8
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# test de normalidad}
+\FunctionTok{shapiro.test}\NormalTok{(}\FunctionTok{residuals}\NormalTok{(modelo2)) }\CommentTok{\# Si hay normalidad en los residuales.}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  residuals(modelo2)
+## W = 0.96041, p-value = 0.2991
+\end{verbatim}
+
+\begin{itemize}
+\item
+  Como p-value = 0.2991 \textgreater{} 0.05 no se rechaza la hipótesis
+  nula.
+\item
+  Existe suficiente evidencia estadística para sustentar la aseveración
+  de que los residuales siguen una distribución significativamente
+  normal.
+\end{itemize}
+
+Homocedasticida (Igualdad de varianzas): La igualdad de varianzas se
+espera entre los residuos y los valores ajustados del modelo.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{plot}\NormalTok{(}\FunctionTok{fitted}\NormalTok{(modelo2), }\FunctionTok{residuals}\NormalTok{(modelo2), }\AttributeTok{col =} \StringTok{\textquotesingle{}blue\textquotesingle{}}\NormalTok{, }\AttributeTok{pch =} \DecValTok{16}\NormalTok{, }\AttributeTok{main =} \StringTok{\textquotesingle{}Fitted vs Residuals\textquotesingle{}}\NormalTok{)}
+\FunctionTok{abline}\NormalTok{(}\AttributeTok{h=}\DecValTok{0}\NormalTok{, }\AttributeTok{col=}\StringTok{\textquotesingle{}red\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{10---Regresión-Lineal_files/figure-latex/unnamed-chunk-30-1.pdf}}
+
+\begin{itemize}
+\tightlist
+\item
+  Como los puntos están dispersos de forma aleatoria arriba y abajo de
+  la línea roja y no hay patrones se sugiere que si hay
+  homocedasticidad.
+\end{itemize}
+
+La Prueba de \textbf{Breusch-Pagan} \(H_0:\) La varianza de los errores
+es constante (homocedasticidad) \(H_1:\) La varianza de los errores no
+es constante (heterocedasticidad)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{bptest}\NormalTok{(modelo2)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  studentized Breusch-Pagan test
+## 
+## data:  modelo2
+## BP = 1.719, df = 1, p-value = 0.1898
+\end{verbatim}
+
+\begin{itemize}
+\item
+  Como p-value = 0.1898 \textgreater{} 0.05 no se rechaza la hipótesis
+  nula.
+\item
+  Existe suficiente evidencia estadística para sustentar la aseveración
+  de que la varianza de los errores es constante.
+\end{itemize}
+
+El test de \textbf{Jarque Bera} \(H_0:\) Los residuos siguen una
+distribución normal (sin sesgo ni curtosis excesiva) \(H_1:\) Los
+residuos no siguen una distribución normal (pueden tener sesgo y
+curtosis fuera de los parámetros normales)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{jarque.bera.test}\NormalTok{(}\FunctionTok{residuals}\NormalTok{(modelo2))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Jarque Bera Test
+## 
+## data:  residuals(modelo2)
+## X-squared = 2.1051, df = 2, p-value = 0.3491
+\end{verbatim}
+
+\begin{itemize}
+\item
+  Como p-value = 0.3491 \textgreater{} 0.05 no se rechaza la hipótesis
+  nula,
+\item
+  Existe suficiente evidencia estadística para sustentar la aseveración
+  de que los residuos siguen una distribución normal.
+\end{itemize}
+
+La prueba de \textbf{Durbin-Watson}
+
+\begin{itemize}
+\item
+  DW ≈ 2 → No hay autocorrelación
+\item
+  DW \textless{} 2 → Autocorrelación positiva
+\item
+  DW \textgreater{} 2 → Autocorrelación negativa
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{dwtest}\NormalTok{(modelo2)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Durbin-Watson test
+## 
+## data:  modelo2
+## DW = 2.1106, p-value = 0.6448
+## alternative hypothesis: true autocorrelation is greater than 0
+\end{verbatim}
+
+\begin{itemize}
+\tightlist
+\item
+  Como DW = 2.1106 lo cual está muy cerca de 2, entonces no hay
+  evidencia de autocorrelación significativa. Esto indica que los
+  errores del modelo son independientes.
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Predicciones en el conjunto de prueba}
+\NormalTok{test2 }\OtherTok{\textless{}{-}}\NormalTok{ test[,}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\DecValTok{5}\NormalTok{)]}
+\NormalTok{predicciones2 }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(modelo2, }\AttributeTok{newdata =}\NormalTok{ test2, }\AttributeTok{interval =} \StringTok{"confidence"}\NormalTok{, }\AttributeTok{level =} \FloatTok{0.95}\NormalTok{)}
+
+\CommentTok{\# Guardar las predicciones y los intervalos de confianza en el conjunto de prueba}
+\NormalTok{test2}\SpecialCharTok{$}\NormalTok{predicted }\OtherTok{\textless{}{-}}\NormalTok{ predicciones2[,}\DecValTok{1}\NormalTok{]}
+\NormalTok{test2}\SpecialCharTok{$}\NormalTok{lower }\OtherTok{\textless{}{-}}\NormalTok{ predicciones2[,}\DecValTok{2}\NormalTok{]}
+\NormalTok{test2}\SpecialCharTok{$}\NormalTok{upper }\OtherTok{\textless{}{-}}\NormalTok{ predicciones2[,}\DecValTok{3}\NormalTok{]}
+
+\CommentTok{\# Ver el conjunto de prueba con las nuevas columnas de predicciones}
+\NormalTok{test2}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 8 x 8
+##    Edad Estatura  Peso Cintura Pulso predicted lower upper
+##   <dbl>    <dbl> <dbl>   <dbl> <dbl>     <dbl> <dbl> <dbl>
+## 1    17     1.63  51.7    67.2    76      49.6  45.3  53.8
+## 2    25     1.52  50.3    73.6    80      55.6  52.1  59.0
+## 3    55     1.58  72      93      60      73.8  70.9  76.7
+## 4    27     1.51  57.2    82.6    72      64.0  61.4  66.7
+## 5    40     1.49  42.4    67.8    80      50.1  45.9  54.3
+## 6    22     1.54  55.9    75.5    64      57.4  54.1  60.6
+## 7    29     1.62  55.4    75.4    68      57.3  54.0  60.5
+## 8    23     1.64  49      74.5    72      56.4  53.1  59.8
+\end{verbatim}
+
+\end{document}

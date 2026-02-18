@@ -1,0 +1,192 @@
+---
+title: 'Sesión 31: Análisis del discriminante lineal (LDA)'
+author: "David Nexticapan Cortes"
+date: "2024-11-03"
+output: html_document
+---
+
+Librerías a utilizar
+
+
+```{r, message=FALSE, warning=FALSE}
+library(readxl)
+library(ggplot2)
+library(ggpubr)
+library(MVN)
+library(car)
+library(biotools) # test de Matriz de Covarianzas
+library(MASS) #Para poder usar la función lda/qda
+library(GGally) # Para el pairplot
+library(caTools) # sample.split
+library(dplyr)
+library(caret) # Matriz de confusión
+```
+
+Cargamos la base de datos
+```{r}
+Insectos <- read_excel("Insectos.xlsx")
+head(Insectos)
+```
+
+**Análisis Exploratorio**
+```{r}
+colSums(is.na(Insectos)) # No hay presencia de missing values.
+```
+
+```{r}
+str(Insectos) # La variable Especie es de tipo character.
+```
+
+```{r}
+Insectos$Especie <- factor(Insectos$Especie) # Convertimos la variable a factor.
+```
+
+Realizamos un pairplot
+```{r, warning=FALSE, message=FALSE}
+ggpairs(Insectos, aes(color = Especie))
+```
+
+  - La variable de la longitud de la pata diferencia perfectamente a las especies, mientras menor es la longitud pertenecen a la especie a.
+  
+  - La variable de la longitud del abdomen no nos proporciona con certeza la diferencia entre las especies.
+  
+  - La variable de la longitud del órgano sexual no proporciona una diferencia clara entre las especies. Pareciera que entre mayor longitud tenga el órgano sexual pertenece a la clase a.
+
+
+**Verificación de Supuestos del Modelo**
+
+Dividimos nuestros datos en "Entrenamiento" y "Prueba"
+```{r}
+set.seed(42)
+barajeado <- slice_sample(Insectos, prop = 1)
+split <- sample.split(barajeado$Especie, SplitRatio = 0.8) # Vector lógico 
+Insectos_train <- subset(barajeado, split == TRUE)
+Insectos_test <- subset(barajeado, split == FALSE)
+```
+
+Verificar la normalidad de los datos para cada variable en cada grupo y la normalidad multivariada.
+```{r}
+vars <- names(Insectos_train)[-1]  # Excluye la columna "Especie"
+sapply(vars, function(var) {
+  tapply(Insectos_train[[var]], Insectos_train$Especie, function(x) {
+    p <- shapiro.test(x)$p.value
+    if (p > 0.05) {
+      return(paste0("p = ", round(p, 4), " → Normal"))
+    } else {
+      return(paste0("p = ", round(p, 4), " → No normal"))
+    }
+  })
+})
+```
+
+Verificación de normalidad multivariada:
+
+![](Normalidad Multivariada.jpg)
+
+Paso previo: Identificamos la presencia de outliers con la prueba de Henze-Zirkler, para decidir el tipo de prueba de normalidad multivariada más adecuada.
+
+```{r}
+mvn(data = subset(Insectos_train, Especie == "a")[,-1], mvnTest = "hz", multivariateOutlierMethod = "quan")
+mvn(data = subset(Insectos_train, Especie == "b")[,-1], mvnTest = "hz", multivariateOutlierMethod = "quan")
+```
+  
+  - Sí hay normalidad multivariada por grupo.
+  
+```{r}
+mvn(data = subset(Insectos_train, Especie == "a")[,-1], mvnTest = "royston", multivariateOutlierMethod = "quan")
+mvn(data = subset(Insectos_train, Especie == "b")[,-1], mvnTest = "royston", multivariateOutlierMethod = "quan")
+```
+
+  - Sí hay normalidad multivariada por grupo.
+
+**Homogeniedad de varianzas y la homogeniedad de matrices de covarianza**
+
+Homogeniedad de varianzas:
+  
+  Hipótesis nula (H₀): Las varianzas son iguales en todos los grupos.
+  Hipótesis alternativa (H₁): Las varianzas no son iguales en todos los grupos.
+  
+```{r}
+leveneTest(Pata ~ Especie, data = Insectos_train) # La varianzas son iguales
+leveneTest(Abdomen ~ Especie, data = Insectos_train) # Las varianzas son iguales
+leveneTest(Organo_Sexual ~ Especie, data = Insectos_train) # Las varianzas son iguales
+```
+
+**Homogeniedad de matrices de covarianza**
+   
+   Ho: La matriz de covarianza es igual en todos los grupos.
+   H1: La matriz de covarianza es diferente en todos los grupos.
+
+Calculamos las matrices de covarianza
+```{r}
+insectos_A <- subset(Insectos_train, Especie == "a")
+insectos_B <- subset(Insectos_train, Especie == "b")
+cov(insectos_A[,-1]); cov(insectos_B[,-1])
+```
+
+Realizamos el test
+```{r}
+boxM(data = Insectos_train[,-1], grouping = Insectos_train$Especie) # Las matrices de covarianza son iguales.
+```
+
+**Estimación de coeficientes para el modelo LDA**
+
+```{r}
+modelo_lda <- lda(Especie ~ ., data = Insectos_train)
+modelo_lda$scaling
+```
+Interpretación de los coeficientes:
+
+  1. Pata (0.1323): Aporta a incrementar la puntuación en LD1, ayudando también a la separación de grupos, pero menos que Organo_Sexual.
+  
+  2. Abdomen (-0.0794): Aporta negativamente a la función discriminante, su efecto es más débil comparado con las otras dos variables.
+  
+  3. Organo_Sexual (-0.5266): Tiene el coeficiente de mayor magnitud en valor absoluto, lo que indica que es la variable más importante para diferenciar entre las especies en este modelo. Su valor negativo implica que, al aumentar esta variable, se reduce el valor de la función discriminante.
+
+
+**Realizamos predicciones**
+
+```{r}
+predicciones <- predict(object = modelo_lda, newdata = Insectos_test)
+clase_predicha <- predicciones$class
+```
+
+
+**Generamos la matriz de Confusión**
+
+```{r}
+especie_real <- factor(Insectos_test$Especie, levels = levels(Insectos_train$Especie))
+especie_predicha <- factor(clase_predicha, levels = levels(Insectos_train$Especie))
+
+# Matriz de confusión y métricas
+conf_matrix <- confusionMatrix(data = especie_predicha, reference = especie_real)
+print(conf_matrix$table)
+
+# Métricas individuales
+accuracy <- conf_matrix$overall["Accuracy"] # Proporción total de predicciones correctas.
+precision <- conf_matrix$byClass["Precision"]
+recall <- conf_matrix$byClass["Recall"]
+f1 <- conf_matrix$byClass["F1"]
+
+# Imprimir métricas
+cat("Accuracy (Exactitud):", accuracy, "\n")
+cat("Precision (Precisión):", precision, "\n")
+cat("Recall (Sensibilidad):", recall, "\n")
+cat("F1 Score:", f1, "\n")
+```
+
+  - Verdaderos negativos (TN = 2): El modelo predijo correctamente que 2 insectos pertenecen a la especie a, y efectivamente lo son.
+  
+  - Verdaderos positivos (TP = 2): El modelo predijo correctamente que 2 insectos pertenecen a la especie b, y efectivamente lo son.
+  
+  - Falsos negativos (FN = 0): El modelo no cometió errores al clasificar insectos de la especie b como si fueran de la especie a.
+  
+  - Falsos positivos (FP = 0): El modelo no cometió errores al clasificar insectos de la especie a como si fueran de la especie b.
+  
+  - Exactitud (Accuracy = 100%): El modelo clasificó correctamente a todos los insectos del conjunto de prueba.
+  
+  - Precisión (Precision = 100%): De todos los insectos que el modelo predijo como especie b, el 100% realmente lo eran.
+  
+  - Sensibilidad (Recall = 100%): De todos los insectos que realmente eran de la especie b, el modelo identificó correctamente al 100%.
+  
+  - F1 Score (100%): El equilibrio entre precisión y sensibilidad es perfecto, lo que indica que el modelo tiene un desempeño excelente para distinguir entre las especies sin cometer errores de omisión (FN) ni de clasificación incorrecta (FP).

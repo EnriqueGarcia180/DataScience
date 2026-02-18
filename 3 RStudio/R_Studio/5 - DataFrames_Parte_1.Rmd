@@ -1,0 +1,193 @@
+---
+title: 'Sesión 16: Data Frame'
+author: "David Nexticapan Cortes"
+date: "2024-07-23"
+output: word_document
+---
+
+Los data frames son estructuras de datos bidimensionales en R, similares a una tabla de base de datos o una hoja de cálculo. La gran ventaja de los data frames es que permiten almacenar columnas con diferentes tipos de datos (números, caracteres, factores, etc.), siempre y cuando cada columna contenga un único tipo de dato.
+
+Algunas características clave de los data frames son:
+
+  1. Dimensiones: Los data frames tienen filas y columnas, donde las columnas representan variables y las filas representan observaciones.
+  2. Tipos de Datos: Cada columna debe contener un solo tipo de dato (numérico, texto, lógico, etc.), pero diferentes columnas pueden tener distintos tipos de datos.
+  3. Manipulación: Los data frames permiten acceder, modificar, y operar sobre sus elementos de manera eficiente usando diversas funciones en R.
+
+## Mi primer data frame
+
+Puedes crear un data frame en R usando la función data.frame(). 
+
+A continuación se muestra un ejemplo de cómo crear un data frame con datos aleatorios de estudiantes, que incluye nombres, sexo, edades, estados de procedencia e ingresos.
+
+```{r}
+library(babynames)
+library(dplyr)
+set.seed(123)
+muestra_nombres = sample_n(babynames, size = 100, replace = FALSE)
+head(muestra_nombres)
+
+nombres = muestra_nombres$name
+nombres
+
+sexo = muestra_nombres$sex
+sexo
+
+edades = round(runif(100, min = 18, max = 35), 0)
+edades
+
+estados = c("Puebla", "Tlaxcala", "Guerrero", "Veracruz", "Ciudad de Mexico", "Queretaro", "Oaxaca")
+estado = sample(estados, 100, replace = TRUE)
+estado
+
+ingreso = round(rnorm(100, mean = 1000, sd = 200), 2)
+ingreso
+
+df_estudiantes = data.frame(Nombre = nombres,
+                            Sexo = sexo,
+                            Edad = edades,
+                            Estado = estado,
+                            Ingreso = ingreso)
+head(df_estudiantes, 20)
+print(df_estudiantes)
+View(df_estudiantes)
+
+```
+
+## Agregar nuevas columnas
+
+Una vez creado el data frame, puedes agregar más columnas como estatura, peso y calificaciones:
+  
+```{r}
+
+# Unir Data Frame con Vectores
+
+set.seed(345)
+estatura = round(rnorm(100, mean = 1.65, sd = 0.10), 2)
+min(estatura)
+max(estatura)
+mean(estatura)
+
+df_estudiantes = data.frame(df_estudiantes,
+                            Estatura = estatura)
+df_estudiantes
+
+set.seed(987)
+pesos = round(rnorm(100, mean = 70, sd = 10), 0)
+pesos
+
+
+# Otra forma de agegar columnas a un DataFrame
+
+df_estudiantes$Pesos = pesos
+df_estudiantes
+
+
+# Calificaciones de 3 Examenes
+
+calificaciones = matrix(data = round(runif(300, 5, 10), 0), nrow = 100, ncol = 3)
+colnames(calificaciones) = c("Examen 1", "Examen 2", "Examen 3")
+calificaciones
+
+
+# Unir Data Frame con una Matriz
+
+df_estudiantes = data.frame(df_estudiantes, calificaciones)
+df_estudiantes
+
+
+```
+
+
+## Operaciones con columnas attach() y detach()
+
+La función attach() nos permite tener acceso a las columnas del data frame para poder operar entre ellas. Mientras, que la función detach() es utíl para cerrar el data frame cuando ya no queremos tener acceso a las columnas.
+
+```{r}
+attach(df_estudiantes)
+
+IMC = Peso / (Estatura ^ 2)
+IMC
+df_estudiantes$IMC = IMC
+head(df_estudiantes)
+hist(IMC)
+
+detach(df_estudiantes)
+
+```
+
+Alternativamente, puedes operar directamente sobre las columnas sin usar attach() y detach():
+
+```{r}
+
+
+df_estudiantes$Promedio = (df_estudiantes$Examen.1 + df_estudiantes$Examen.2 + df_estudiantes$Examen.3) / 3
+df_estudiantes
+View(df_estudiantes)
+
+```
+
+Puedes exportar el data frame a un archivo Excel usando el paquete openxlsx:
+
+```{r}
+library(openxlsx)
+write.xlsx(df_estudiantes,"Mi primer data frame.xlsx")
+
+```
+
+## Actividad 2
+
+Un analista financiero desea evaluar el Retorno sobre el Patrimonio (ROE) de varias empresas para decidir en cuál invertir. El ROE se calcula como:
+
+$ROE = (Beneficio Neto / Patrimonio Neto) * 100$
+
+  1.Crea un data frame para 20 empresas con las siguientes columnas:
+    Nombre de la empresa: "Empresa 1", "Empresa 2", …, "Empresa 20".
+    Patrimonio neto: un vector aleatorio generado con runif() con valores entre 750,000 y 1,000,000. set.seed(123)
+    Beneficio neto: un vector aleatorio generado con runif() con valores entre 50,000 y 300,000. set.seed(123)
+    ROE: calculado como el beneficio neto dividido por el patrimonio neto, multiplicado por 100. set.seed(123)
+
+  2. Agrega una columna que indique "Sí obtiene el rendimiento esperado" si el ROE es mayor o igual al 16%, y "No obtiene el rendimiento esperado" en caso contrario.
+
+  3. Imprime los nombres de las empresas que tienen un ROE mayor al 16%.
+
+```{r}
+set.seed(123)
+empresas =  paste("Empresa", 1:20)
+empresas
+
+patrimonio = runif(n = 20, min = 750000, max = 1000000)
+beneficio = runif(n = 20, min = 50000, max = 300000)
+ROE = round((beneficio / patrimonio) * 100, 2)
+
+df_empresas = data.frame(Empresas = empresas,
+                         Patrimonio_Neto = patrimonio,
+                         Beneficio_Neto = beneficio,
+                         ROE = ROE)
+df_empresas
+
+
+```
+
+```{r}
+estatus = c()
+
+for (i in 1:20) {
+  if (df_empresas$ROE[i] >= 16){
+    estatus[i] = "Sí obtiene el rendimiento esperado"
+  }
+  else {
+    estatus[i] = "No obtiene el rendimiento esperado"
+  }
+}
+df_empresas$Estatus = estatus 
+df_empresas
+
+```
+```{r}
+
+empresas_logradas = df_empresas$Empresas[df_empresas$ROE >= 16]
+empresas_logradas
+
+```
+
+

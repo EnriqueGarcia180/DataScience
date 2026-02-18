@@ -1,0 +1,282 @@
+---
+title: 'Sesión 17: Data Frame Parte 2'
+author: "David Nexticapan Cortes"
+date: "2024-07-23"
+output: word_document
+---
+
+#Librería Dplyr
+
+dplyr es una de las librerías más populares y poderosas en R para la manipulación de datos. Forma parte del tidyverse, un conjunto de paquetes diseñados para facilitar el análisis de datos. Proporciona una gramática coherente para trabajar con data frames, permitiendo realizar operaciones complejas de manera concisa y legible, facilitando su aplicación.
+
+Intalación y carga de la librería
+
+```{r, message=false, warning=false}
+
+library(dplyr)
+
+```
+
+Importamos la base de datos de dulces M&M
+
+```{r}
+
+library(readxl)
+dulces <- read_excel("DulcesM&M.xlsx")
+View(dulces)
+
+```
+ 
+## Principales funciones de dplyr
+
+## 1. select: Selecciona columnas específicas de un data frame.
+
+Es útil cuando queremos trabajar con una parte específica de los datos, por ejemplo, seleccionar solo la columna de pesos de los dulces.
+
+```{r}
+
+Pesos_Dulces = select(dulces, Peso)
+head(Pesos_Dulces) # Sigue siendo un data.frame
+
+# Version alternativa indice columna
+Pesos_Dulces1 = select(dulces, 2)
+head(Pesos_Dulces1)
+
+
+# Codigo para seleccionar mas de una columna
+
+# Pesos_Dulces2 = select(dulces, Peso, Radio, Volumen)
+# Pesos_Dulces3 = select(dulces, c(2, 5, 7))
+
+
+```
+
+## 2. filter: filtra filas según una condición lógica.
+
+Esta función es clave cuando queremos segmentar los datos. Por ejemplo, seleccionar solo los dulces rojos o aquellos que cumplen cierto criterio específico. 
+
+```{r}
+
+df_dulces_rojos = filter(dulces, Color == "Rojo")
+df_dulces_rojos
+
+df_dulces_pesados = filter(dulces, Peso > 0.9)
+df_dulces_pesados
+
+df_dulces_pesados_verdes = filter(dulces, Color == "Verde", Peso > 0.9)
+df_dulces_pesados_verdes
+
+```
+
+## 3. arrange: ordena las filas del data frame.
+
+Sirve para organizar los datos de forma ascendente o descendente, lo cual es muy útil para informes o análisis.
+
+```{r}
+
+dulces_ordenados_color = arrange(dulces, Color)
+dulces_ordenados_color
+
+dulces_ordenados_color_descendente = arrange(dulces, desc(Color))
+dulces_ordenados_color_descendente
+
+dulces_ordenados_peso = arrange(dulces, Peso)
+dulces_ordenados_peso
+
+dulces_ordenados_peso_descendente = arrange(dulces, desc(Peso))
+dulces_ordenados_peso_descendente
+
+dulces_ordenados_color_peso = arrange(dulces, Color, Peso)
+dulces_ordenados_color_peso
+
+```
+
+## 4. mutate: Crea nuevas columnas o transforma las ya existentes
+
+Permite modificar el data frame añadiendo nuevas columnas basadas en cálculos o transformaciones.
+
+```{r}
+set.seed(42)
+volumen_dulces = round(rnorm(n=100, mean = 0.60, sd = 0.01), 2)
+volumen_dulces
+
+dulces_con_volumen = mutate(dulces, Volumen = volumen_dulces)
+head(dulces_con_volumen)
+
+# Modificando la columna Volumen
+dulces_con_volumen2 = mutate(dulces_con_volumen, Volumen = round(rnorm(n=100, mean=0.6, sd=0.02),2))
+dulces_con_volumen2
+```
+
+## 5. count: Cuenta las ocurrencias por grupo
+
+Ideal para ver frecuencias de alguna variable categórica, como los colores en el dataset.
+
+```{r}
+count_dulces = count(dulces, Color)
+count_dulces # Es un data frame
+
+
+# Version alternativa que NO es un data frame
+table(dulces$Color) # es un Vector
+
+```
+
+## 6. summarise: Genera resúmenes estadísticos 
+
+Permite calcular estadísticas como medias, varianzas o sumas, etc. facilitando el análisis de datos.
+
+```{r}
+# Resumen estadistico simple
+summary(dulces)
+
+
+# Resumen estadistico en data frame
+resumen_estadistico = summarise(dulces, Min = min(Peso),
+                                Q1 = quantile(Peso, 0.25),
+                                Mediana = median(Peso),
+                                Media = mean(Peso),
+                                Q3 = quantile(Peso, 0.75),
+                                Max = max(Peso),
+                                Varianza = var(Peso),
+                                StdDev = sd(Peso),
+                                Total = n())
+resumen_estadistico
+
+```
+
+
+## 7. group_by: Agrupa el data frame por una o más variables 
+
+Cuando queremos realizar análisis estadístico por grupos, como promedio de peso por color.
+
+```{r}
+
+grupos_colores = group_by(dulces, Color)
+dulces
+grupos_colores # aparece la leyenda de Groups
+
+resumen_estadistico_grupos = summarise(grupos_colores, Min = min(Peso),
+                                Q1 = quantile(Peso, 0.25),
+                                Mediana = median(Peso),
+                                Media = mean(Peso),
+                                Q3 = quantile(Peso, 0.75),
+                                Max = max(Peso),
+                                Varianza = var(Peso),
+                                StdDev = sd(Peso),
+                                Total = n())
+resumen_estadistico_grupos
+
+
+```
+
+## Piping (%>%)  Ctrl + Shift + M
+
+El operador %>% facilita la escritura fluida y clara de código en R, permitiendo encadenar operaciones sin necesidad de crear variables intermedias.
+
+```{r}
+
+resumen = dulces %>% 
+  group_by(Color) %>%
+  summarise(Min = min(Peso),
+            Q1 = quantile(Peso, 0.25),
+            Mediana = median(Peso),
+            Media = mean(Peso),
+            Q3 = quantile(Peso, 0.75),
+            Max = max(Peso),
+            Varianza = var(Peso),
+            StdDev = sd(Peso),
+            Total = n()) %>% 
+  print()
+
+```
+
+## Visualización de datos
+
+## Histogramas y Diagrama de Cajas y Bigotes
+
+```{r}
+hist(dulces$Peso, col = "salmon", main = "Histograma Pesos Dulces M&M", xlab = "Peso", ylab = "Frecuencia", probability = TRUE, ylim = c(0, 11))
+lines(density(dulces$Peso), col = "black", lwd = 3)
+```
+```{r}
+boxplot(dulces$Peso, col = "salmon")
+
+# IQR - Rango Inter Quartil: 3er Quartil -  1er Quartil
+# Bigote Inferior: (1er Quartil) - (1.5 * Rango Inter Quartil)
+# Bigote Superior: (3er Quartil) + (1.5 * Rango Inter Quartil)
+# Outliers: Fuera de los Bigotes
+
+boxplot.stats(dulces$Peso)
+
+```
+```{r}
+
+boxplot(dulces$Peso ~ dulces$Color,
+        col = c("yellow", "blue", "brown", "orange", "red", "green"))
+
+
+
+```
+# Tarea: Investigar como obtener el resumen de los outliers por color
+
+```{r}
+
+library(rstatix)   # para la funcion identify_outliers()
+
+dulces %>% 
+  group_by(Color) %>%
+  identify_outliers(Peso) %>% 
+  print()
+  
+# Values above Q3 + 1.5xIQR or below Q1 - 1.5xIQR are considered as outliers. 
+# Values above Q3 + 3xIQR or below Q1 - 3xIQR are considered as extreme points (or extreme outliers).
+```
+
+##Actividad (0.5 extra)
+
+Una compañía de seguros está interesada en entender mejor los factores que influyen en los costos médicos de sus asegurados fumadores (usar archivo "expenses.xlsx"). Utilizando R con las librerías dplyr, realiza el siguiente análisis:
+
+  1. Filtra la base de datos para seleccionar únicamente a los clientes que son fumadores.
+  2. Calcula estadísticas descriptivas como el costo medio (mean), mediano (median), mínimo (min) y máximo (max) de los cargos médicos (charges) para los fumadores en cada región (region) de la base de datos.
+  3. Crea un histograma que muestre la distribución de los cargos médicos (charges) entre los fumadores, diferenciando por sexo (sex). Asegúrate de etiquetar adecuadamente los ejes y proporcionar una leyenda si es necesario.
+  4. Genera un gráfico de caja y bigotes (boxplot) que compare la distribución de los cargos médicos (charges) entre los fumadores según la región (region). Cada región debe estar claramente etiquetada en el eje x.
+  
+```{r}
+library(openxlsx)
+library(dplyr)
+
+expenses <- read.xlsx("expenses.xlsx")
+
+fumadores = filter(expenses, smoker == "yes")
+
+summary(fumadores)
+
+estadistica_descriptiva = fumadores %>% 
+  group_by(region) %>% 
+  summarise(Costo_promedio = mean(charges),
+            Mediana = median(charges),
+            Minimo = min(charges),
+            Maximo = max(charges)) %>% 
+  print()
+
+# Filtrado usando "filter"
+cargos_por_sexo_femenino = filter(fumadores, sex == "female")
+#cargos_por_sexo_femenino = fumadores$charges[fumadores$sex == "female"]
+hist(cargos_por_sexo_femenino$charges, col = "pink", main = "Fumadoras", xlab = "Cargo ($)", ylab = "Frecuencia", probability = TRUE)
+lines(density(cargos_por_sexo_femenino$charges), col = "black", lwd = 3)
+
+
+# Filtrado por data frame
+cargos_por_sexo_masculino = fumadores$charges[fumadores$sex == "male"]
+hist(cargos_por_sexo_masculino, col = "blue", main = "Fumadores", xlab = "Cargo ($)", ylab = "Frecuencia", probability = TRUE)
+lines(density(cargos_por_sexo_masculino), col = "black", lwd = 3)
+
+
+
+boxplot(fumadores$charge ~ fumadores$region, col = "gray")
+
+
+boxplot.stats(fumadores$charge)
+```
+

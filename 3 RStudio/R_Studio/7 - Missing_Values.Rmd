@@ -1,0 +1,168 @@
+---
+title: 'Sesión 17: Missing Values'
+author: "David Nexticapan Cortes"
+date: "2025-02-14"
+output: html_document
+---
+
+Cargamos las librerías a utilizar
+```{r, message=FALSE, warning=FALSE}
+library(readxl)
+library(dplyr)
+```
+
+Importamos la base de datos a trabajar
+```{r}
+PulsoCardiacoMujeres = read_excel("PulsoCardiacoMujeres.xlsx")
+
+head(PulsoCardiacoMujeres)
+
+diabetes = read_excel("diabetes.xlsx")
+
+head(diabetes)
+
+glimpse(diabetes)
+```
+
+La base de datos se conforma de las siguientes variables:
+
+  id → Identificación
+  chol → Colesterol
+  stab.glu → Glucosa en ayunas
+  hdl → Colesterol HDL
+  ratio → Relación colesterol total/HDL
+  glyhb → Hemoglobina glicosilada
+  location → Ubicación
+  age → Edad
+  gender → Género
+  height → Estatura
+  weight → Peso
+  frame → Complexión
+  bp.1s → Presión arterial sistólica (1ra medición)
+  bp.1d → Presión arterial diastólica (1ra medición)
+  bp.2s → Presión arterial sistólica (2da medición)
+  bp.2d → Presión arterial diastólica (2da medición)
+  waist → Cintura
+  hip → Cadera
+  time.ppn → Tiempo postprandial (después de comer) en minutos
+
+# Continuación librería dplyr
+
+6. summarise: Genera un Resumen de Estadísticas Descriptivas. Y Agrupa por una variable categorica <char> (i.e. gender)
+```{r}
+resumen_stb_glu = diabetes %>% 
+  group_by(gender) %>% 
+  summarise(Total = n(),
+            Mediana = median(stab.glu), # stab.glu = glucosa en ayunas
+            Media_avg = mean(stab.glu),
+            Varianza = var(stab.glu),
+            StdDev = sd(stab.glu),
+            Min = min(stab.glu),
+            Max = max(stab.glu),
+            Q3 = quantile(stab.glu, 0.75)) %>%
+  print()
+
+boxplot(diabetes$stab.glu ~ diabetes$gender, col = c("pink", "cyan"))
+
+# Outliers:
+library(rstatix)   # para la funcion identify_outliers()
+diabetes %>% 
+  group_by(gender) %>%
+  identify_outliers(stab.glu) %>% 
+  print()
+
+```
+# Ignorar NA (na.rm = TRUE)
+
+```{r}
+# Error: hay NA
+mean(diabetes$chol)
+# Remove NA:
+mean(diabetes$chol, na.rm = TRUE)
+
+# Ignorar NA para estadisticas descriptivas
+resumen_chol = diabetes %>% 
+  group_by(gender) %>% 
+  summarise(Total = n(),
+            Mediana = median(chol, na.rm = TRUE),
+            Media_avg = mean(chol, na.rm = TRUE),
+            Varianza = var(chol, na.rm = TRUE),
+            StdDev = sd(chol, na.rm = TRUE),
+            Min = min(chol, na.rm = TRUE),
+            Max = max(chol, na.rm = TRUE),
+            Q3 = quantile(chol, 0.75, na.rm = TRUE)) %>%
+  print()
+
+```
+
+## Missing values
+
+Los valores faltantes o "missing values" son comunes en muchos conjuntos de datos y pueden influir negativamente en los análisis. En R, estos valores se representan como NA (Not Available).
+
+Podemos identificar los id de las personas que tienen al menos un valor NA en cualquiera de sus variables o en una variable específica.
+
+```{r}
+# Ver cuantos NA hay por columna
+colSums(is.na(diabetes))
+
+# Filtrar por cualquier NA que haya en cualquier columna
+filtrado_NA = filter(diabetes, if_any(everything(),is.na))
+filtrado_NA
+```
+
+Podemos eliminar "remover" las filas que contienen valores NA. La función drop_na() de dplyr nos permite realizar esta acción.
+
+```{r}
+# Eliminar fila con NA en cualquier columna
+diabetes1 <- diabetes %>%
+  drop_na() %>%
+  print()
+
+# Eliminar fila con NA en las columnas bp.2s, bp.2d solamente (serian las menos relevantes porque ya hay una primera toma de glucosa bp.1s/d)
+diabetes2 = diabetes %>%
+  drop_na(bp.2s, bp.2d) %>%
+  print()
+
+```
+
+
+# IMPUTAR (reemplazar):
+
+Podemos realizar la acción de imputar lo que significa reemplazar los valores faltantes (NA) con un valor estimado o razonable basado en los datos disponibles. La imputación se usa para evitar la pérdida de información al eliminar filas completas con valores faltantes.
+```{r}
+
+# ejercicio: IMPUTAR (reemplazar) los NA de la columna bp.1s con los valores de la MEDIA y MEDIANA (sin los NA obvio)
+
+# Imputar con la Media
+media_bp.1s = mean(diabetes$bp.1s, na.rm = TRUE)
+diabetes$bp.1s[is.na(diabetes$bp.1s)] = media_bp.1s
+  
+#confirmar: # ver como ya no hay NA en columna bp.1s
+colSums(is.na(diabetes)) 
+
+mean(diabetes$bp.1s)
+
+# Imputar con la Mediana
+mediana_bp.1d = median(diabetes$bp.1d, na.rm = TRUE)
+diabetes$bp.1d[is.na(diabetes$bp.1d)] = mediana_bp.1d
+colSums(is.na(diabetes))
+
+
+
+
+# Ver el tipo de variables
+glimpse(diabetes)
+
+# IMPUTAR usando la MODA para las varibles categoricas <char>, la que se repite mas.
+# R no tiene una funcion para la Moda pero por medio de una table() podemos ver los valores que se repiten mas
+
+table(diabetes$frame) # Importante: La MODA seria "medium", no large o small.
+
+moda_frame = "medium"
+diabetes$frame[is.na(diabetes$frame)] = moda_frame
+
+# Confirmar, ver que bp.1s, bp.1d y Frame ya no tienen NA
+colSums(is.na(diabetes))
+
+```
+

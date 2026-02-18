@@ -1,0 +1,481 @@
+---
+title: "Vectores en R"
+author: "David Nexticapan Cortes"
+date: "2025-03-23"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+  word_document: default
+---
+
+# **Vectores en R**
+
+Un vector en R es una colección ordenada de datos. Esta estructura almacena una secuencia de elementos del mismo tipo, es decir, los vectores pueden tener elementos numéricos, carácteres, complejos o lógicos.
+
+Para crear un vector se utiliza la función c() que puede tener un número arbitrario de datos.
+
+## Propiedades de los vectores
+
+Tipo y Clase: Un vector tiene la misma clase que el tipo de datos que contiene (vector atómico). Por ejemplo, si tenemos un vector de elementos de tipo númerico, la clase del vector será numérico.
+
+```{r}
+vector1 <- c(1,2,3,4,5)
+
+print(vector1)
+mode(vector1) # Es de tipo numerico.
+length(vector1)
+class(vector1)
+dim(vector1)
+
+
+vector2 <- c(1,2,"Hola", 4, 5)
+
+print(vector2)
+mode(vector2) # Es de tipo caracter.
+length(vector2)
+class(vector2)
+dim(vector2)
+
+
+suma_vector <- vector1 + vector2    #Esta operacion no se puede realizar, no pertenecen a la misma clase
+
+```
+
+Length: Es el número de elementos que contiene un vector. Es la única dimensión que tiene un vector. Para calcular el largo se utiliza la función lenght()
+
+```{r}
+
+length(vector1)
+length(vector2)
+
+```
+
+## Aritmética vectorial
+
+Los vectores pueden usarse para realizar operaciones aritméticas. Estas operaciones se realizan elemento a elemento.
+
+```{r}
+
+vector3 <- c(1,3,5,7,9)
+vector4 <- c(2,4,6,8,10)
+
+# Suma
+vector_suma <- vector3 + vector4
+print(vector_suma)
+
+# Diferencia
+vector_diferencia <- vector3 - vector4
+print(vector_diferencia)
+
+# Producto
+vector_producto <- vector3 * vector4
+print(vector_producto)
+
+# Cociente
+vector_cociente <- round(vector3 / vector4, 2)
+print(vector_cociente)
+
+# Potencia
+  # vector a numero
+vector_potencia1 <- vector3 ^ 2
+print(vector_potencia1)
+  # vector a vector
+vector_potencia2 <- vector3 ^ vector4
+print(vector_potencia2)
+
+```
+
+## Funciones especiales aplicadas a vectores
+
+Existen otras funciones como log(), exp(), sin(), cos(), tan() y sqrt(). También se pueden obtener valores como min(), max(), sum(), prod(), mean(), var(), sd().
+
+```{r}
+
+# ?rnorm
+
+set.seed(42) # Semilla para reproducibilidad de datos.
+
+edades <- round(rnorm(15, mean = 25, sd = 1), 0)
+print(edades)
+
+
+# Calcular la edad minima
+
+edad_minima <- min(edades)
+print(edad_minima)
+
+# Calcular la edad maxima
+
+edad_maxima <- max(edades)
+print(edad_maxima)
+
+# Calcular la media
+media_edad <- mean(edades)
+print(media_edad)
+
+# Calcular la desviacion estandar de las edades
+desviacion_edad <- sd(edades)
+print(desviacion_edad)
+
+# Calcular la varianza de las edades
+var_edad <- var(edades)
+print(var_edad)
+
+
+```
+
+**Actividad 1**
+
+1.  Crea un vector “x” con los primeros 10 números impares.
+2.  Crea un vector “y” con los primeros 10 números pares.
+3.  Crea un vector z definido por la operación z = 2x+y+1. ¿Qué vector se obtiene al realizar dicha operación?
+4.  Calcule las funciones log, exp, sin, cos, tan, sqrt para el vector z. Redondeados a un decimal.
+5.  Calcule el valor máximo y mínimo de cada vector.
+6.  Calcule la media, la varianza y la desviación estándar de los elementos de cada vector.
+7.  Calcule la longitud, la suma y el producto de cada vector.
+
+```{r}
+
+x = c(1,3,5,7,9,11,13,15,17,19)
+y = c(2,4,6,8,10,12,14,16,18,20)
+z = 2*x + y + 1
+print(z)
+round(log(z),1)
+options(scipen = 999) # para quitar la notacion cientifica
+round(exp(z),1)
+round(sin(z),1)
+round(cos(z),1)
+round(tan(z),1)
+round(sqrt(z),1)
+
+min(x); max(x)
+min(y); max(y)
+min(z); max(z)
+
+round(mean(x),1); round(var(x),1); round(sd(x),1)
+mean(y); var(y); sd(y)
+mean(z); var(z); sd(z)
+
+length(x); sum(x); prod(x)
+length(y); sum(y); prod(y)
+length(z); sum(z); prod(z)
+
+```
+
+## Vectores con caracteres
+
+```{r}
+nombres = c("Enrique", "Josefina", "Deck")
+print(nombres)
+mode(nombres); class(nombres)
+```
+
+# **Vectores con índices**
+
+En R, los "vectores con índices" se refiere a la forma de acceder y manipular a los elementos individuales de un vector mediante índices numéricos.
+
+Cada elemento en un vector tiene una posición única que se identifica mediante un índice numérico. Estos comienzan desde 1 hasta la longitud del vector.
+
+```{r}
+vector1 = c(10,20,30,40,50)
+
+# Accedemos al primer elemento
+elemento3 = vector1[3]
+print(elemento3)
+
+# Podemos modificar los elementos de un vector
+vector1[2] = 25
+print(vector1)
+
+```
+
+## Tipos de índices
+
+Primero generamos un "vector aleatorio" de salarios de trabajadores con la función rnorm()
+
+```{r}
+set.seed(345)
+salarios <- round(rnorm(100, mean = 20000, sd=5000),2)
+head(salarios, 10)
+tail(salarios, 10)
+sample(salarios, 5)
+
+# Regla de Sturges para que nos recomiende el numero de Breaks
+nclass.Sturges(salarios) 
+print(nclass.Sturges(salarios))
+
+hist(x=salarios, col = "steelblue", breaks = nclass.Sturges(salarios),
+     main = "Histograma Salarios Trabajadores",
+     ylab = "Frecuencia")
+
+```
+
+## Vectores con índices "enteros positivos"
+
+```{r}
+# Ordenar salarios de menor a mayor
+salarios_ordenados = sort(x = salarios, decreasing = FALSE)
+print(salarios_ordenados)
+
+# Acceder al salario posicion: 25, 50 y 75
+    # Dado que el vector es de 100 entonces la posicion 25 nos dice que hay 25 personas que ganan menos o igual a $16,075.46 pesos. 
+salarios_ordenados[25] 
+salarios_ordenados[50]
+salarios_ordenados[75]
+#Estos no son los quartiles.
+
+# otra opcion a lo de arriba, metiendo los indices en forma de vector.
+salarios_ordenados[c(25,50,75)]
+
+# Obtenemos los primeros 5 salarios mas bajos
+salarios_ordenados[c(1,2,3,4,5)]
+
+salarios_ordenados[1:5] # otra opcion: slicing
+
+# Obtener los cinco salarios mas altos
+salarios_ordenados[96:100]
+
+```
+
+## Vectores con índices "enteros negativos"
+
+En este caso, indican los elementos del vector referido que deben ser excluidos.
+
+```{r}
+salarios_ordenados[-1] # aqui es todos menos el primero
+
+salarios_ordenados[-(25:75)] # aqui quita del 25 al 75
+
+salarios_ordenados[-c(1,2,3,5)] # en forma de vector
+```
+
+Este tipo de índices tiene una gran importancia en el análisis de datos ya que puedes identificar valores NA y poder excluirlos de la base de datos o poder reemplazarlos por alguna medida de tendencia central.
+
+```{r}
+vector2 = c(1,2,3,4, NA, NA, 7, 8, NA, 10)
+
+# Como identifcar la posicion de los NA?
+is.na(vector2)
+posiciones_NA = which(is.na(vector2))
+print(posiciones_NA)
+
+# Eliminamos las "filas" en donde tenemos la presencia de valores NA
+vector3 = vector2[-posiciones_NA]
+print(vector3)
+
+# Podemos imputar los valores NA por la media de los valores
+media = mean(vector2, na.rm = TRUE)
+print(media)
+
+vector2[posiciones_NA] = media  # Reemplazar NA con la media calculada
+print(vector2)
+
+```
+
+## Vectores con índices lógicos
+
+Solo se mostrarán los elementos que cumplan una condición lógica como índice.
+
+```{r}
+
+# Rescatamos el vector salarios
+head(salarios)
+
+# Calculamos la media de los salario (empirica)
+media_salarios = mean(salarios)
+print(media_salarios) 
+
+# Calculamos la mediana de los salarios
+mediana_salarios = median(salarios)
+print(mediana_salarios)
+
+# vemos que la mediana es menor que la media, lo que sugiere tener una asimetria hacia la derecha.
+
+hist(salarios, probability = TRUE)  # probability = TRUE para cambiar de Frecuencias a Densidades en el eje Y
+lines(density(salarios), col="red", lwd=3)
+
+
+# Calcula los salarios que son mayores a la media salarial
+# salarios > media_salarios
+
+salarios_mayores = salarios[salarios > mediana_salarios]
+print(salarios_mayores)
+
+# Calcula los salarios que son mayores a la media pero que son menores que a mediana
+
+salarios_media_mediana = salarios[salarios > media_salarios & salarios < mediana_salarios]
+salarios_media_mediana
+
+# Calcula los salarios que son menores a la media pero que son mayores que a mediana
+
+salarios_media_mediana = salarios[salarios < media_salarios & salarios > mediana_salarios]
+salarios_media_mediana
+
+# Calcula los salarios que son menores de $15,000 o mayores a $25,000.
+
+salarios_menores_mayores = salarios[salarios < 15000 | salarios > 25000]
+salarios_menores_mayores
+
+```
+
+## Vectores con índices de caracteres
+
+Esta opción es útil cuando el vector posee el atributo de names() para identificar sus componentes.
+
+```{r}
+#install.packages("babynames")
+library(babynames)
+
+head(babynames)  # solo la usaremos para extraer nombres
+
+# Generamos un vector de nombres aleatorios
+set.seed(42)
+nombres_trabajador = sample(x = babynames$name, size = 100, replace = FALSE)
+head(nombres_trabajador)
+
+
+# Otra opcion a sample es sample_n de dplyr
+
+#install.packages("dplyr")
+library(dplyr)
+set.seed(42)
+nombres_trabajador1 = sample_n(tbl=babynames, size = 100, replace = FALSE)
+head(nombres_trabajador1$name)
+
+# A cada salario le asignamos un nombre
+names(salarios) = nombres_trabajador 
+# Asignar un nombre al dataframe salarios desde el dataframe nombres_trabajador
+head(salarios)
+
+salarios["Nicklous"]
+salarios[c("Nicklous", "Swade")]
+
+```
+
+## Secuencias
+
+En R, hay diversas formas de generar secuencias numéricas, comenzado por el operador ":"
+
+```{r}
+# Creamos una secuencia de numeros del 1 al 30
+secuencia1 = 1:30
+secuencia1
+
+# Creamos una secuencia descendente del 30 al 1
+secuencia2 = 30:1
+secuencia2
+
+```
+
+La función seq() permite generar secuencias más complejas. Esta función dispone de cinco argumentos, aunque no todos se utilizan simultáneamente.
+
+1.  from: Valor inicial de la secuencia
+2.  to: valor final de la secuencia
+3.  by: Incremento entre los elementos sucesivos de la secuencia
+4.  length.out: Longitud deseada de la secuencia
+5.  along.with: Una secuencia existente que define la longitud de la nueva secuencia.
+
+```{r}
+
+# Crear una secuencia de 1 a 30
+secuencia3 = seq(from=1, to=30)
+secuencia3
+
+# Secuencia de 1 a 10 con incrementos de 0.2
+secuencia4 = seq(from = 1, to = 10, by = 0.2)
+secuencia4
+
+# Secuencia de 1 a 10 con una longitud especifica de 4 elementos
+secuencia5 = seq(from = 1, to = 10, length.out = 4)
+secuencia5
+
+```
+
+La función rep() también es útil para generar patrones repetitivos en secuencias.
+
+```{r}
+
+secuencia6 = rep(1:5, times = 3)
+secuencia6
+
+# ejemplo mas interesante combinando seq() y rep():
+secuencia6 = rep(seq(from = 1, to = 10, by = 0.2), times = 3)
+secuencia6
+
+```
+
+## Actividad 1
+
+Genera una sucesión de números pares de 2 al 20 utilizando seq()
+
+```{r}
+
+solucion1 = seq(from=2, to=20, by=2)
+solucion1
+
+# otra opcion de hacerlo:
+solucion1_1 = 1:10 * 2
+solucion1_1
+
+plot(solucion1, col = "blue", type = "o", main = "secuencia de numeros pares", xlab = "posicion", ylab = "valor")
+grid()
+
+```
+
+Genera una sucesión de números decimales de 0 a 1 con incrementos de 0.1
+
+```{r}
+solucion2 = seq(from = 0, to = 1, by = 0.1)
+solucion2
+
+```
+
+Genera una secuencia de cuadrados de los primeros 10 números naturales.
+
+```{r}
+solucion3 = seq(from=1, to=10)^2
+solucion3
+
+# Otra opcion:
+solucion3_1 = (1:10) ^ 2
+solucion3_1
+```
+
+Genera una secuencia de números de 1 al 100 divisibles por 3.
+
+```{r}
+solucion4 = seq(from=3, to=99, by=3)
+solucion4
+
+```
+
+Genera una secuencia de fechas a lo largo del mes de Agosto del 2025
+
+```{r}
+solucion5 = seq(from = as.Date("2025-08-01"), to = as.Date("2025-08-31"), by = "days")
+solucion5
+```
+
+## Actividad 2 - (TAREA)
+
+Genera una secuencia para la población proyectada de 2024 a 2050, suponiendo un crecimiento anual del 2% y una población inicial de 10,000 habitantes. Visualiza los resultados con un gráfico.
+
+```{r}
+
+# Mi Solucion
+periodo <- 2050 - 2024
+años <- 0:periodo
+poblacion <- round((10000*(1+0.02)^años), 0)
+print(poblacion)
+years <- seq(from = as.Date("2024-01-01"), to = as.Date("2050-01-01"), by = "years")
+print(years)
+
+plot(x = years, y = poblacion, col = "blue", type = "o", lwd = 4, main = "Crecimiento Anual del periodo 2024 a 2050", xlab = "Años", ylab = "numero de habitantes")
+grid()
+
+
+# La solucion de la clase
+
+
+```

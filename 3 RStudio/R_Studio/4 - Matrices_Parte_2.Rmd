@@ -1,0 +1,205 @@
+---
+title: 'Sesión 13: Problemas con matrices'
+author: "David Nexticapan Cortes"
+date: "2024-07-23"
+output: html_document
+---
+
+Las funciones rbind() y cbind() sirven para construir matrices utilizando otras matrices (o vectores). En otras palabras, a una matriz ya dada, se pueden agregar filas y/o columnas con estas funciones.
+
+## Actividad 1
+
+Elabora una matriz utilizando la función cbind() que tenga el nombre, la matrícula, la calificación de Software Actuarial II de cinco compañeros de clase. Luego, agrega a dos compañeros con la misma información.
+
+```{r}
+nombres = c("Christian", "Diego", "Edgar", "Enrique", "Javier")
+id = c(1, 2, 3, 4, 5)
+calificacion = c(10,9,7,10,8)
+
+base_estudiantes = cbind(id, calificacion)
+base_estudiantes
+
+# Dar nombres a los renglones usando el vector nombres
+# Si hubieramos agregado nombres en el cbind() de arriba hubieran quedado como caracteres por los nombres i.e "Christian" "1" "10"... etc.
+rownames(base_estudiantes) = nombres
+base_estudiantes
+
+# Agregamos a dos companieros mas
+
+Jorge = c(6, 9)
+Pedro = c(7, 6)
+base_estudiantes = rbind(base_estudiantes, Jorge, Pedro)
+base_estudiantes
+
+```
+
+## Actividad 2
+
+```{r}
+set.seed(123)
+Examen1 = round(runif(7, 5, 10), 0)
+Examen1
+
+base_estudiantes = cbind(base_estudiantes, Examen1)
+base_estudiantes
+
+# Otro Examen
+Examen2 = round(runif(7, 4, 9), 0)
+Examen2
+
+base_estudiantes = cbind(base_estudiantes, Examen2)
+base_estudiantes
+
+# Para quitar una columna "repetida" o que ya no se va a utilizar
+base_estudiantes = base_estudiantes[,-3]
+base_estudiantes
+
+```
+
+## Sistemas de ecuaciones
+
+Considera el siguiente ejemplo de un sistema de ecuaciones 3x3
+\[
+\begin{cases}
+x + y - z = -1 \\
+x + 2y + 2z = 0 \\
+2x + y - z = 1
+\end{cases}
+\]
+
+### Metodo de la Matriz Inversa
+\[x = A^{-1}*b\]
+
+```{r}
+library(matlib)
+
+x = c(1, 1, 2)
+y = c(1, 2, 1)
+z = c(-1, 2, -1)
+b = c(-1, 0, 1)
+
+A = matrix(data = c(x, y, z), nrow = 3, ncol = 3, byrow = FALSE)
+B = matrix(data = b, nrow = 3, ncol = 1, byrow = FALSE)
+
+inv_A = inv(A)
+
+X = inv_A %*% b
+
+# Comprobacion
+B_comprobacion = A %*% X
+B_comprobacion
+ifelse(B_comprobacion == B, print("Solucion correcta!"), print("Error"))
+
+```
+
+### Regla de Cramer
+
+Si $Ax=b$ es un sistema de ecuaciones, donde $A$ es la matriz de coeficientes del sistema, $x=(x_{1}, x_{2},..., x_{n})$ es el vector columna de incógnitas y $b$ el vector columna de términos independientes, entonces la solución del sistema es: $x_{j}=det(A_{j})/det(A)$
+
+```{r}
+A = matrix(data = c(1, 1, 2, 1, 2, 1, -1, 2, -1), nrow = 3, ncol = 3, byrow = FALSE)
+b = matrix(data = c(-1, 0, 1), nrow = 3, ncol = 1, byrow = TRUE) # Terminos independientes
+detA = det(A)
+determinantes_xyz = c(0,0,0)
+
+# x-matrix, y-matriz and z-matrix
+for (i in 1:3){
+  A_xyz = A
+  A_xyz[,i] = b
+  det_xyz = det(A_xyz)
+  determinantes_xyz[i] = det_xyz
+  print(determinantes_xyz)
+}
+
+
+
+x = determinantes_xyz[1] / detA
+y = determinantes_xyz[2] / detA
+z = determinantes_xyz[3] / detA
+
+
+cat("La solucion del sistema es: x =", x, ", y =", y, ", z =", z)
+
+# Comprobacion 
+XYZ = matrix(data = c(x,y,z), nrow = 3, ncol = 1, byrow = TRUE)
+B = A %*% XYZ
+
+diferencia = (B - b)
+print(diferencia)
+zeros = matrix(c(0,0,0), 3, 1)
+
+ifelse(diferencia == zeros, print("Solucion correcta!"), print("Error"))
+
+
+```
+
+
+### Función "solve()"
+
+Se puede resolver un sistema de ecuaciones de forma más rápida y directa utilizando la función solve()
+
+```{r}
+matriz_coeficientes = matrix(c(1,1,2,1,2,1,-1,2,-1), 3, 3)
+
+independientes = c(-1,0,1)
+
+soluciones_sistema = solve(matriz_coeficientes, independientes)
+
+cat("La solucion del sistema es: x =", soluciones_sistema[1], ", y =", soluciones_sistema[2], ", z =", soluciones_sistema[3], "\n")
+
+# Comprobacion
+comprobacion_independientes = matriz_coeficientes %*% soluciones_sistema
+
+ifelse(independientes == comprobacion_independientes, print("Solucion correcta!"), print("Error"))
+
+```
+
+#Actividad 3
+
+Como encargado de almacén, debes comprar más medicamentos A, B y C para abastecer las diferentes unidades médicas. Se te solicitó comprar 500 cajas de medicamento distribuidas entre los tres tipos, gastando un total de 4,750,000. Considera que la caja con medicamentos tipo A vale 7,500, la caja de medicamentos tipo B 17,500 y la caja de medicamentos tipo C 8,500. Además, el número de cajas de medicamento C debe ser igual al número de cajas del medicamento A más el número de cajas del medicamento B. ¿Cuántas cajas de cada tipo de medicamento debes comprar para cumplir con lo solicitado?
+
+
+```{r}
+
+# x + y + z = 500
+# 7500*x + 17500*y + 8500*z = 4750000
+# x + y - z = 0.0
+
+matriz_coeficientes = matrix(c(1, 1, 1, 7500, 17500, 8500, 1, 1, -1), 3, 3, byrow = TRUE)
+independientes = matrix(c(500, 4750000, 0.00), 3, 1)
+
+soluciones_sistema = solve(matriz_coeficientes, independientes)
+
+cat("La solucion del sistema es: x =", soluciones_sistema[1], ", y =", soluciones_sistema[2], ", z =", soluciones_sistema[3], "\n")
+
+# Comprobacion
+comprobacion_independientes = as.integer(matriz_coeficientes %*% soluciones_sistema)
+
+ifelse(independientes == comprobacion_independientes, print("Solucion correcta!"), print("Error"))
+
+```
+
+## Actividad 4
+
+Una aseguradora generó 42 pólizas de seguros de automóvil en una semana particular. La compañía de seguros trabaja con tres agencias, las cuales demandaron todas las pólizas. En una semana determinada, la primera agencia solicitó tantas pólizas como la suma de la segunda y la tercera agencia juntas, mientras que la segunda agencia pidió un 20% más que la suma de la mitad de las pólizas solicitadas por la primera agencia más un tercio de las pólizas solicitadas por la tercera. ¿Cuántas pólizas solicitó cada agencia?
+
+```{r}
+# x + y + z = 42 
+# -x + y + z = 0
+#    y = 1.20*(1/2x + 1/3y)
+# -1/2x + y/1.20 - 1/3y = 0
+
+matriz_coeficientes = matrix(c(1, 1, 1, -1, 1, 1, -1/2, 1/1.2, - 1/3), 3, 3, byrow = TRUE)
+independientes = matrix(c(42, 0, 0), 3, 1)
+
+soluciones_sistema = solve(matriz_coeficientes, independientes)
+
+cat("La solucion del sistema es: x =", soluciones_sistema[1], ", y =", soluciones_sistema[2], ", z =", soluciones_sistema[3], "\n")
+
+# Comprobacion
+comprobacion_independientes = as.integer(matriz_coeficientes %*% soluciones_sistema)
+
+ifelse(independientes == comprobacion_independientes, print("Solucion correcta!"), print("Error"))
+
+
+```

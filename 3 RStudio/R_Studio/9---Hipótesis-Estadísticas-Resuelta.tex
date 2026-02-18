@@ -1,0 +1,590 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Sesión 22: Hipótesis Estadísticas},
+  pdfauthor={David Nexticapan Cortes},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Sesión 22: Hipótesis Estadísticas}
+\author{David Nexticapan Cortes}
+\date{2024-10-02}
+
+\begin{document}
+\maketitle
+
+\#\textbf{Estadístico de Prueba}
+
+Una encuesta de 703 empleados seleccionados al azar, reveló que el 61\%
+de ellos consiguió trabajo por medio de una red de contactos. Calcule el
+valor del estadístico de prueba (𝒛,𝒕,𝝌\^{}𝟐) para la aseveración de que
+la mayoría de los empleados consiguen trabajo por medio de una red de
+contactos.
+
+(Ejercicio del slide 10)
+
+Planteamos nuestro juego de hipótesis: \[
+H_0: p = 0.50 \\
+H_1: p > 0.50
+\] Calculamos el estadístico de prueba para Proporciones: (Slide 9) \[
+z=\frac{\widehat{p}-p}{\sqrt{\frac{pq}{n}}}
+\]
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{estadistico\_proporciones }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(p\_muestral, p\_poblacional, n)\{}
+      \CommentTok{\# p\_muestral: es la proporcion de exitos en la muestra}
+      \CommentTok{\# p\_poblacional:  es el valor aseverado de la hipotesis nula (la que tiene la igualdad)  }
+      \CommentTok{\# n: es el tamanio de la muestra}
+  
+\NormalTok{  z }\OtherTok{\textless{}{-}} \FunctionTok{round}\NormalTok{((p\_muestral }\SpecialCharTok{{-}}\NormalTok{ p\_poblacional) }\SpecialCharTok{/} \FunctionTok{sqrt}\NormalTok{(p\_poblacional }\SpecialCharTok{*}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{{-}}\NormalTok{ p\_poblacional) }\SpecialCharTok{/}\NormalTok{ n),}\DecValTok{2}\NormalTok{)}
+  
+  \FunctionTok{cat}\NormalTok{(}\StringTok{"Estadistico de Prueba para Proporciones z ="}\NormalTok{, z)}
+
+\NormalTok{  \}}
+\FunctionTok{estadistico\_proporciones}\NormalTok{(}\FloatTok{0.61}\NormalTok{, }\FloatTok{0.50}\NormalTok{, }\DecValTok{703}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Estadistico de Prueba para Proporciones z = 5.83
+\end{verbatim}
+
+Utilice aseveraciones para expresar la hipótesis nula (H0) y alternativa
+(H1) en cada uno de los siguientes casos.
+
+Luego, calcula el valor del Estadístico de Prueba (𝒛,𝒕,𝝌\^{}𝟐)
+
+Caso 1: La aseveración es que la proporción de adultos que fumaron un
+cigarrillo la semana pasada es menor que 0.25, y los estadísticos de
+muestra incluyen 𝑛=1018 sujetos, de los cuales 224 dicen que fumaron un
+cigarrillo la semana pasada.
+
+(Ejercicio del slide 11)
+
+\[
+H_0: p =  0.25 \\
+H_1: p < 0.25 
+\] \# Aqui se ve que es de cola izquierda porque p \textless{} 0.25 en
+la hipotesis Alternativa \# Hipotesis alternativa es la que estoy
+aseverando en este ejercicio \# Hipotesis nula es la que se opone a la
+aseveracion
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{estadistico\_proporciones}\NormalTok{(}\DecValTok{224}\SpecialCharTok{/}\DecValTok{1018}\NormalTok{, }\FloatTok{0.25}\NormalTok{, }\DecValTok{1018}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Estadistico de Prueba para Proporciones z = -2.21
+\end{verbatim}
+
+\section{Salio negativo porque en la hipotesis alternativa tengo una
+prueba de cola
+izquierda.}\label{salio-negativo-porque-en-la-hipotesis-alternativa-tengo-una-prueba-de-cola-izquierda.}
+
+\section{Este es el Estadistico de Prueba que voy a comparar con el
+Valor Critico (slide 13), si cae dentro de la region de rechazo
+rechazamos hipotesis nula en favor de la
+alternativa.}\label{este-es-el-estadistico-de-prueba-que-voy-a-comparar-con-el-valor-critico-slide-13-si-cae-dentro-de-la-region-de-rechazo-rechazamos-hipotesis-nula-en-favor-de-la-alternativa.}
+
+\section{Otro metodo es por medio del P-Value:,Calculo el Area a la
+izquierda del estadistico de prueba y lo comparo con el P-Value, si (P
+\textless= alpha) entonces se rechaza la hipotesis
+nula.}\label{otro-metodo-es-por-medio-del-p-valuecalculo-el-area-a-la-izquierda-del-estadistico-de-prueba-y-lo-comparo-con-el-p-value-si-p-alpha-entonces-se-rechaza-la-hipotesis-nula.}
+
+La mayoría de las demandas por negligencia se retiran o se rechazan, y
+una muestra aleatoria de 500 demandas incluye 349 que fueron retiradas o
+rechazadas.
+
+(Ejercicio del slide 11)
+
+\[
+H_0: p = 0.50 \\
+H_1: p > 0.50
+\] \# De la hipotesis alternativa vemos que es una prueba de cola
+derecha
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{estadistico\_proporciones}\NormalTok{(}\DecValTok{349}\SpecialCharTok{/}\DecValTok{500}\NormalTok{, }\FloatTok{0.50}\NormalTok{, }\DecValTok{500}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Estadistico de Prueba para Proporciones z = 8.85
+\end{verbatim}
+
+\section{El Estadistico de Prueba obtenido arriba es un valor muy alto,
+por ejemplo, con un nivel de Significancia alpha=0.05 tenemos un Valor
+Critico de z=1.645 (cola derecha) por lo que podemos concluir aqui que
+el Estadistico de Prueba cae dentro de la region de rechazo y por lo
+tanto se rechaza la hipotesis nula en favor de la alternativa (``mayoría
+de las demandas por negligencia se retiran o se
+rechazan'')}\label{el-estadistico-de-prueba-obtenido-arriba-es-un-valor-muy-alto-por-ejemplo-con-un-nivel-de-significancia-alpha0.05-tenemos-un-valor-critico-de-z1.645-cola-derecha-por-lo-que-podemos-concluir-aqui-que-el-estadistico-de-prueba-cae-dentro-de-la-region-de-rechazo-y-por-lo-tanto-se-rechaza-la-hipotesis-nula-en-favor-de-la-alternativa-mayoruxeda-de-las-demandas-por-negligencia-se-retiran-o-se-rechazan}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsection{Región Crítica, Nivel de Significancia, Valor Crítico y P -
+Value}\label{regiuxf3n-cruxedtica-nivel-de-significancia-valor-cruxedtico-y-p---value}
+
+\textbf{Actividad 5}
+
+(Slide 15 presentacion 9 - Sesión Pruebas de Hipótesis.pptx)
+
+Con un nivel de significancia de \(\alpha=0.05\), calcule los valores
+\(z\) críticos para cada una de las siguientes hipótesis alternativas.
+
+Caso 1: \(p \neq 0.5\) (de manera que la región crítica está en ambas
+colas de la distribución normal)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{alpha1 }\OtherTok{\textless{}{-}} \FloatTok{0.05}
+\CommentTok{\# Valor critico (z)}
+\NormalTok{v\_critico1\_izq }\OtherTok{\textless{}{-}} \FunctionTok{qnorm}\NormalTok{(alpha1}\SpecialCharTok{/}\DecValTok{2}\NormalTok{, }\AttributeTok{lower.tail =}\NormalTok{ T)}
+  \CommentTok{\# La funcion qnorm que toma alpha como input y devuelve el valor de z (el estadistico de prueba)}
+  \CommentTok{\# Quantil de la Distribucion Normal. Lower.Tail=TRUE significa es cola izquierda. Calcula el area a la Izquierda. alpha/2 porque es de dos colas.}
+\NormalTok{v\_critico1\_der }\OtherTok{\textless{}{-}} \FunctionTok{qnorm}\NormalTok{(}\DecValTok{1} \SpecialCharTok{{-}}\NormalTok{ alpha1}\SpecialCharTok{/}\DecValTok{2}\NormalTok{, }\AttributeTok{lower.tail =}\NormalTok{ T)}
+  \CommentTok{\# Por medio del Complemento (1{-}alpha/2) obtenemos el Area por la izquierda hasta el alpha/2 de la cola derecha (como en las tablas)}
+\NormalTok{v\_critico1\_der\_2 }\OtherTok{\textless{}{-}} \FunctionTok{qnorm}\NormalTok{(alpha1}\SpecialCharTok{/}\DecValTok{2}\NormalTok{, }\AttributeTok{lower.tail =}\NormalTok{ F)}
+  \CommentTok{\# Otra opcion es usar lower.tail=FALSE para que calcule la derecha:  }
+\NormalTok{v\_critico1\_izq; v\_critico1\_der}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] -1.959964
+\end{verbatim}
+
+\begin{verbatim}
+## [1] 1.959964
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Función de la densidad normal estándar}
+\FunctionTok{curve}\NormalTok{(}\FunctionTok{dnorm}\NormalTok{(x), }\AttributeTok{from =} \SpecialCharTok{{-}}\FloatTok{3.5}\NormalTok{, }\AttributeTok{to =} \FloatTok{3.5}\NormalTok{, }\AttributeTok{col =} \StringTok{"blue"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{, }\AttributeTok{xlab =} \StringTok{"Valores de Z"}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"Densidad"}\NormalTok{, }\AttributeTok{main =} \StringTok{"Distribución Normal Estándar"}\NormalTok{)}
+
+\CommentTok{\# Agregamos una linea vertical en los valores críticos.}
+\FunctionTok{abline}\NormalTok{(}\AttributeTok{v =}\NormalTok{ v\_critico1\_izq, }\AttributeTok{col =} \StringTok{"red"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{, }\AttributeTok{lty =} \DecValTok{2}\NormalTok{)}
+  \CommentTok{\# v: vertical, h: horizontal}
+  \CommentTok{\# lty: line type 0=blank, 1=solid (default), 2=dashed, 3=dotted, 4=dotdash, 5=longdash, 6=twodash}
+\FunctionTok{abline}\NormalTok{(}\AttributeTok{v =}\NormalTok{ v\_critico1\_der, }\AttributeTok{col =} \StringTok{"red"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{, }\AttributeTok{lty =} \DecValTok{2}\NormalTok{)}
+
+\CommentTok{\# Rellenar el área a la izquierda del valor crítico por medio de un POLIGONO}
+\NormalTok{x\_sombreado }\OtherTok{\textless{}{-}} \FunctionTok{seq}\NormalTok{(}\SpecialCharTok{{-}}\FloatTok{3.5}\NormalTok{, v\_critico1\_izq, }\AttributeTok{length.out =} \DecValTok{100}\NormalTok{)}
+\NormalTok{y\_sombreado }\OtherTok{\textless{}{-}} \FunctionTok{dnorm}\NormalTok{(x\_sombreado)}
+\FunctionTok{polygon}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\FloatTok{3.5}\NormalTok{, x\_sombreado, v\_critico1\_izq), }\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, y\_sombreado, }\DecValTok{0}\NormalTok{), }\AttributeTok{col =} \StringTok{"lightblue"}\NormalTok{) }
+  \CommentTok{\# El poligono se forma de Vertices por eso hay que cerrarlo en x = v\_critico1\_izq, y = 0.}
+
+\CommentTok{\# Rellenar el área a la derecha del valor crítico por medio de un POLIGONO}
+\NormalTok{x\_sombreado1 }\OtherTok{\textless{}{-}} \FunctionTok{seq}\NormalTok{(v\_critico1\_der, }\FloatTok{3.5}\NormalTok{, }\AttributeTok{length.out =} \DecValTok{100}\NormalTok{)}
+\NormalTok{y\_sombreado1 }\OtherTok{\textless{}{-}} \FunctionTok{dnorm}\NormalTok{(x\_sombreado1)}
+\FunctionTok{polygon}\NormalTok{(}\FunctionTok{c}\NormalTok{(v\_critico1\_der, x\_sombreado1, }\FloatTok{3.5}\NormalTok{), }\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, y\_sombreado1, }\DecValTok{0}\NormalTok{), }\AttributeTok{col =} \StringTok{"lightblue"}\NormalTok{)}
+
+\CommentTok{\# Texto para el valor crítico}
+\FunctionTok{text}\NormalTok{(}\AttributeTok{x =}\NormalTok{ v\_critico1\_izq, }\AttributeTok{y =} \FloatTok{0.02}\NormalTok{, }\AttributeTok{labels =} \FunctionTok{paste0}\NormalTok{(}\StringTok{"Valor crítico: "}\NormalTok{, }\FunctionTok{round}\NormalTok{(v\_critico1\_izq, }\DecValTok{3}\NormalTok{)), }\AttributeTok{pos =} \DecValTok{4}\NormalTok{, }\AttributeTok{col =} \StringTok{"red"}\NormalTok{, }\AttributeTok{cex =} \FloatTok{0.7}\NormalTok{) }
+  \CommentTok{\# pos = 4: Las posiciones son como las manecillas del reloj: 1{-}abajo, 2{-}izquierda, 3{-}arriba, 4{-}derecha.}
+\FunctionTok{text}\NormalTok{(}\AttributeTok{x =}\NormalTok{ v\_critico1\_der, }\AttributeTok{y =} \FloatTok{0.02}\NormalTok{, }\AttributeTok{labels =} \FunctionTok{paste0}\NormalTok{(}\StringTok{"Valor crítico: "}\NormalTok{, }\FunctionTok{round}\NormalTok{(v\_critico1\_der, }\DecValTok{3}\NormalTok{)), }\AttributeTok{pos =} \DecValTok{2}\NormalTok{, }\AttributeTok{col =} \StringTok{"red"}\NormalTok{, }\AttributeTok{cex =} \FloatTok{0.7}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{9---Hipótesis-Estadísticas-Resuelta_files/figure-latex/unnamed-chunk-4-1.pdf}}
+
+Caso 2: \(p < 0.5\) (de manera que la región crítica está en la cola
+izquierda de la distribución normal)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{alpha2 }\OtherTok{\textless{}{-}} \FloatTok{0.05}
+\CommentTok{\# Valor critico (z)}
+\NormalTok{v\_critico2 }\OtherTok{\textless{}{-}} \FunctionTok{qnorm}\NormalTok{(alpha2, }\AttributeTok{lower.tail =}\NormalTok{ T)}
+\NormalTok{v\_critico2 }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] -1.644854
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Función de la densidad normal estándar}
+\FunctionTok{curve}\NormalTok{(}\FunctionTok{dnorm}\NormalTok{(x), }\AttributeTok{from =} \SpecialCharTok{{-}}\FloatTok{3.5}\NormalTok{, }\AttributeTok{to =} \FloatTok{3.5}\NormalTok{, }\AttributeTok{col =} \StringTok{"blue"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{, }\AttributeTok{xlab =} \StringTok{"Valores de Z"}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"Densidad"}\NormalTok{, }\AttributeTok{main =} \StringTok{"Distribución Normal Estándar"}\NormalTok{)}
+
+\CommentTok{\# Agregamos una linea vertical en los valores críticos.}
+\FunctionTok{abline}\NormalTok{(}\AttributeTok{v =}\NormalTok{ v\_critico2, }\AttributeTok{col =} \StringTok{"red"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{, }\AttributeTok{lty =} \DecValTok{2}\NormalTok{)}
+
+\CommentTok{\# Rellenar el área a la izquierda del valor crítico por medio de un POLIGONO}
+\NormalTok{x\_sombreado }\OtherTok{\textless{}{-}} \FunctionTok{seq}\NormalTok{(}\SpecialCharTok{{-}}\FloatTok{3.5}\NormalTok{, v\_critico2, }\AttributeTok{length.out =} \DecValTok{100}\NormalTok{)}
+\NormalTok{y\_sombreado }\OtherTok{\textless{}{-}} \FunctionTok{dnorm}\NormalTok{(x\_sombreado)}
+\FunctionTok{polygon}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\FloatTok{3.5}\NormalTok{, x\_sombreado, v\_critico2), }\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, y\_sombreado, }\DecValTok{0}\NormalTok{), }\AttributeTok{col =} \StringTok{"lightblue"}\NormalTok{) }
+
+
+\CommentTok{\# Texto para el valor crítico}
+\FunctionTok{text}\NormalTok{(}\AttributeTok{x =}\NormalTok{ v\_critico2, }\AttributeTok{y =} \FloatTok{0.02}\NormalTok{, }\AttributeTok{labels =} \FunctionTok{paste0}\NormalTok{(}\StringTok{"Valor crítico: "}\NormalTok{, }\FunctionTok{round}\NormalTok{(v\_critico2, }\DecValTok{3}\NormalTok{)), }\AttributeTok{pos =} \DecValTok{4}\NormalTok{, }\AttributeTok{col =} \StringTok{"red"}\NormalTok{, }\AttributeTok{cex =} \FloatTok{0.7}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{9---Hipótesis-Estadísticas-Resuelta_files/figure-latex/unnamed-chunk-5-1.pdf}}
+
+Caso 3: \(p > 0.5\) (de manera que la región crítica está en la cola
+derecha de la distribución normal)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{alpha3 }\OtherTok{\textless{}{-}} \FloatTok{0.05}
+\CommentTok{\# Valor critico (z)}
+\NormalTok{v\_critico3 }\OtherTok{\textless{}{-}} \FunctionTok{qnorm}\NormalTok{(}\DecValTok{1} \SpecialCharTok{{-}}\NormalTok{ alpha3, }\AttributeTok{lower.tail =}\NormalTok{ T)}
+\NormalTok{v\_critico3}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 1.644854
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Función de la densidad normal estándar}
+\FunctionTok{curve}\NormalTok{(}\FunctionTok{dnorm}\NormalTok{(x), }\AttributeTok{from =} \SpecialCharTok{{-}}\FloatTok{3.5}\NormalTok{, }\AttributeTok{to =} \FloatTok{3.5}\NormalTok{, }\AttributeTok{col =} \StringTok{"blue"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{, }\AttributeTok{xlab =} \StringTok{"Valores de Z"}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"Densidad"}\NormalTok{, }\AttributeTok{main =} \StringTok{"Distribución Normal Estándar"}\NormalTok{)}
+
+\CommentTok{\# Agregamos una linea vertical en los valores críticos.}
+\FunctionTok{abline}\NormalTok{(}\AttributeTok{v =}\NormalTok{ v\_critico3, }\AttributeTok{col =} \StringTok{"red"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{, }\AttributeTok{lty =} \DecValTok{2}\NormalTok{)}
+
+\CommentTok{\# Rellenar el área a la izquierda del valor crítico por medio de un POLIGONO}
+\NormalTok{x\_sombreado }\OtherTok{\textless{}{-}} \FunctionTok{seq}\NormalTok{(}\SpecialCharTok{{-}}\FloatTok{3.5}\NormalTok{, v\_critico3, }\AttributeTok{length.out =} \DecValTok{100}\NormalTok{)}
+\NormalTok{y\_sombreado }\OtherTok{\textless{}{-}} \FunctionTok{dnorm}\NormalTok{(x\_sombreado)}
+\FunctionTok{polygon}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\FloatTok{3.5}\NormalTok{, x\_sombreado, v\_critico3), }\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, y\_sombreado, }\DecValTok{0}\NormalTok{), }\AttributeTok{col =} \StringTok{"lightblue"}\NormalTok{) }
+
+
+\CommentTok{\# Texto para el valor crítico}
+\FunctionTok{text}\NormalTok{(}\AttributeTok{x =}\NormalTok{ v\_critico3, }\AttributeTok{y =} \FloatTok{0.02}\NormalTok{, }\AttributeTok{labels =} \FunctionTok{paste0}\NormalTok{(}\StringTok{"Valor crítico: "}\NormalTok{, }\FunctionTok{round}\NormalTok{(v\_critico3, }\DecValTok{3}\NormalTok{)), }\AttributeTok{pos =} \DecValTok{2}\NormalTok{, }\AttributeTok{col =} \StringTok{"red"}\NormalTok{, }\AttributeTok{cex =} \FloatTok{0.7}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{9---Hipótesis-Estadísticas-Resuelta_files/figure-latex/unnamed-chunk-6-1.pdf}}
+
+\textbf{Actividad 6}
+
+(Slide 16 presentacion 9 - Sesión Pruebas de Hipótesis.pptx)
+
+Calcule los valores críticos en cada caso, suponga que se aplica la
+distribución normal y haga una representación gráfica.
+
+Caso 1: Prueba de cola derecha; \(\alpha = 0.01\)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{alpha4 }\OtherTok{=} \FloatTok{0.01}
+\CommentTok{\# Valor critico (z)}
+\NormalTok{critico\_derecho }\OtherTok{\textless{}{-}} \FunctionTok{qnorm}\NormalTok{(}\DecValTok{1}\SpecialCharTok{{-}}\NormalTok{alpha4, }\AttributeTok{lower.tail =} \ConstantTok{TRUE}\NormalTok{)}
+\FunctionTok{print}\NormalTok{(critico\_derecho)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 2.326348
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Función de la densidad normal estándar}
+\FunctionTok{curve}\NormalTok{(}\FunctionTok{dnorm}\NormalTok{(x), }\AttributeTok{from =} \SpecialCharTok{{-}}\FloatTok{3.5}\NormalTok{, }\AttributeTok{to =} \FloatTok{3.5}\NormalTok{, }\AttributeTok{col =} \StringTok{"blue"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{, }\AttributeTok{xlab =} \StringTok{"Valores de Z"}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"Densidad"}\NormalTok{, }\AttributeTok{main =} \StringTok{"Distribución Normal Estándar"}\NormalTok{)}
+
+\CommentTok{\# Rellenar el área a la izquierda del valor crítico}
+\NormalTok{x\_sombreado }\OtherTok{\textless{}{-}} \FunctionTok{seq}\NormalTok{(critico\_derecho, }\FloatTok{3.5}\NormalTok{, }\AttributeTok{length.out =} \DecValTok{100}\NormalTok{)}
+\NormalTok{y\_sombreado }\OtherTok{\textless{}{-}} \FunctionTok{dnorm}\NormalTok{(x\_sombreado)}
+\FunctionTok{polygon}\NormalTok{(}\FunctionTok{c}\NormalTok{(critico\_derecho, x\_sombreado, }\FloatTok{3.5}\NormalTok{), }\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, y\_sombreado, }\DecValTok{0}\NormalTok{), }\AttributeTok{col =} \StringTok{"lightblue"}\NormalTok{)}
+
+\CommentTok{\# Agregar linea vertical con el valor crítico en la gráfica}
+\FunctionTok{abline}\NormalTok{(}\AttributeTok{v =}\NormalTok{ critico\_derecho, }\AttributeTok{col =} \StringTok{"red"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{, }\AttributeTok{lty =} \DecValTok{2}\NormalTok{)}
+
+\CommentTok{\# Texto para el valor crítico}
+\FunctionTok{text}\NormalTok{(}\AttributeTok{x =}\NormalTok{ critico\_derecho, }\AttributeTok{y =} \FloatTok{0.02}\NormalTok{, }\AttributeTok{labels =} \FunctionTok{paste0}\NormalTok{(}\StringTok{"Valor crítico: "}\NormalTok{, }\FunctionTok{round}\NormalTok{(critico\_derecho, }\DecValTok{3}\NormalTok{)), }\AttributeTok{pos =} \DecValTok{2}\NormalTok{, }\AttributeTok{col =} \StringTok{"red"}\NormalTok{, }\AttributeTok{cex =} \FloatTok{0.7}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{9---Hipótesis-Estadísticas-Resuelta_files/figure-latex/unnamed-chunk-7-1.pdf}}
+
+Caso 2: Prueba de dos colas; \(\alpha=0.10; H_1:p\neq0.17\)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{alpha5 }\OtherTok{=} \FloatTok{0.10}
+\CommentTok{\# Valor critico (z)}
+\NormalTok{critico\_izquierdo }\OtherTok{\textless{}{-}} \FunctionTok{qnorm}\NormalTok{(alpha5}\SpecialCharTok{/}\DecValTok{2}\NormalTok{, }\AttributeTok{lower.tail =} \ConstantTok{TRUE}\NormalTok{)}
+\FunctionTok{print}\NormalTok{(critico\_izquierdo)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] -1.644854
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{critico\_derecho }\OtherTok{\textless{}{-}} \FunctionTok{qnorm}\NormalTok{(}\DecValTok{1}\SpecialCharTok{{-}}\NormalTok{alpha5}\SpecialCharTok{/}\DecValTok{2}\NormalTok{, }\AttributeTok{lower.tail =} \ConstantTok{TRUE}\NormalTok{)}
+\FunctionTok{print}\NormalTok{(critico\_derecho)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 1.644854
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Función de la densidad normal estándar}
+\FunctionTok{curve}\NormalTok{(}\FunctionTok{dnorm}\NormalTok{(x), }\AttributeTok{from =} \SpecialCharTok{{-}}\FloatTok{3.5}\NormalTok{, }\AttributeTok{to =} \FloatTok{3.5}\NormalTok{, }\AttributeTok{col =} \StringTok{"blue"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{, }\AttributeTok{xlab =} \StringTok{"Valores de Z"}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"Densidad"}\NormalTok{, }\AttributeTok{main =} \StringTok{"Distribución Normal Estándar"}\NormalTok{)}
+
+\CommentTok{\# Rellenar el área a la derecha del valor crítico}
+\NormalTok{x\_sombreado }\OtherTok{\textless{}{-}} \FunctionTok{seq}\NormalTok{(critico\_derecho, }\FloatTok{3.5}\NormalTok{, }\AttributeTok{length.out =} \DecValTok{100}\NormalTok{)}
+\NormalTok{y\_sombreado }\OtherTok{\textless{}{-}} \FunctionTok{dnorm}\NormalTok{(x\_sombreado)}
+\FunctionTok{polygon}\NormalTok{(}\FunctionTok{c}\NormalTok{(critico\_derecho, x\_sombreado, }\FloatTok{3.5}\NormalTok{), }\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, y\_sombreado, }\DecValTok{0}\NormalTok{), }\AttributeTok{col =} \StringTok{"lightblue"}\NormalTok{)}
+
+\CommentTok{\# Rellenar el área a la izquierda del valor crítico}
+\NormalTok{x\_sombreado }\OtherTok{\textless{}{-}} \FunctionTok{seq}\NormalTok{(}\SpecialCharTok{{-}}\FloatTok{3.5}\NormalTok{, critico\_izquierdo, }\AttributeTok{length.out =} \DecValTok{100}\NormalTok{)}
+\NormalTok{y\_sombreado }\OtherTok{\textless{}{-}} \FunctionTok{dnorm}\NormalTok{(x\_sombreado)}
+\FunctionTok{polygon}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\FloatTok{3.5}\NormalTok{, x\_sombreado, critico\_izquierdo), }\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, y\_sombreado, }\DecValTok{0}\NormalTok{), }\AttributeTok{col =} \StringTok{"lightblue"}\NormalTok{)}
+
+\CommentTok{\# Agregar lineas verticales con los valores críticos en la gráfica}
+\FunctionTok{abline}\NormalTok{(}\AttributeTok{v =}\NormalTok{ critico\_derecho, }\AttributeTok{col =} \StringTok{"red"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{, }\AttributeTok{lty =} \DecValTok{2}\NormalTok{)}
+\FunctionTok{abline}\NormalTok{(}\AttributeTok{v =}\NormalTok{ critico\_izquierdo, }\AttributeTok{col =} \StringTok{"red"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{, }\AttributeTok{lty =} \DecValTok{2}\NormalTok{)}
+
+\CommentTok{\# Texto para el valor crítico}
+\FunctionTok{text}\NormalTok{(}\AttributeTok{x =}\NormalTok{ critico\_derecho, }\AttributeTok{y =} \FloatTok{0.02}\NormalTok{, }\AttributeTok{labels =} \FunctionTok{paste0}\NormalTok{(}\StringTok{"Valor crítico: "}\NormalTok{, }\FunctionTok{round}\NormalTok{(critico\_derecho, }\DecValTok{2}\NormalTok{)), }\AttributeTok{pos =} \DecValTok{2}\NormalTok{, }\AttributeTok{col =} \StringTok{"red"}\NormalTok{, }\AttributeTok{cex =} \FloatTok{0.7}\NormalTok{)}
+\FunctionTok{text}\NormalTok{(}\AttributeTok{x =}\NormalTok{ critico\_izquierdo, }\AttributeTok{y =} \FloatTok{0.02}\NormalTok{, }\AttributeTok{labels =} \FunctionTok{paste0}\NormalTok{(}\StringTok{"Valor crítico: "}\NormalTok{, }\FunctionTok{round}\NormalTok{(critico\_izquierdo, }\DecValTok{2}\NormalTok{)), }\AttributeTok{pos =} \DecValTok{4}\NormalTok{, }\AttributeTok{col =} \StringTok{"red"}\NormalTok{, }\AttributeTok{cex =} \FloatTok{0.7}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{9---Hipótesis-Estadísticas-Resuelta_files/figure-latex/unnamed-chunk-8-1.pdf}}
+
+Caso 3: Prueba de cola Izquierda: \(\alpha=0.02; H_1:p<0.19\)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{alpha6 }\OtherTok{=} \FloatTok{0.02}
+\CommentTok{\# Valor critico (z)}
+\NormalTok{critico\_izquierdo }\OtherTok{\textless{}{-}} \FunctionTok{qnorm}\NormalTok{(alpha6, }\AttributeTok{lower.tail =} \ConstantTok{TRUE}\NormalTok{)}
+
+\CommentTok{\# Función de la densidad normal estándar}
+\FunctionTok{curve}\NormalTok{(}\FunctionTok{dnorm}\NormalTok{(x), }\AttributeTok{from =} \SpecialCharTok{{-}}\FloatTok{3.5}\NormalTok{, }\AttributeTok{to =} \FloatTok{3.5}\NormalTok{, }\AttributeTok{col =} \StringTok{"blue"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{, }\AttributeTok{xlab =} \StringTok{"Valores de Z"}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"Densidad"}\NormalTok{, }\AttributeTok{main =} \StringTok{"Distribución Normal Estándar"}\NormalTok{)}
+
+\CommentTok{\# Rellenar el área a la izquierda del valor crítico}
+\NormalTok{x\_sombreado }\OtherTok{\textless{}{-}} \FunctionTok{seq}\NormalTok{(}\SpecialCharTok{{-}}\FloatTok{3.5}\NormalTok{, critico\_izquierdo, }\AttributeTok{length.out =} \DecValTok{100}\NormalTok{)}
+\NormalTok{y\_sombreado }\OtherTok{\textless{}{-}} \FunctionTok{dnorm}\NormalTok{(x\_sombreado)}
+\FunctionTok{polygon}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\FloatTok{3.5}\NormalTok{, x\_sombreado, critico\_izquierdo), }\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, y\_sombreado, }\DecValTok{0}\NormalTok{), }\AttributeTok{col =} \StringTok{"lightblue"}\NormalTok{)}
+
+\CommentTok{\# Agregar linea vertical con el valor crítico en la gráfica}
+\FunctionTok{abline}\NormalTok{(}\AttributeTok{v =}\NormalTok{ critico\_izquierdo, }\AttributeTok{col =} \StringTok{"red"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{, }\AttributeTok{lty =} \DecValTok{2}\NormalTok{)}
+
+\CommentTok{\# Texto para el valor crítico}
+\FunctionTok{text}\NormalTok{(}\AttributeTok{x =}\NormalTok{ critico\_izquierdo, }\AttributeTok{y =} \FloatTok{0.02}\NormalTok{, }\AttributeTok{labels =} \FunctionTok{paste0}\NormalTok{(}\StringTok{"Valor crítico: "}\NormalTok{, }\FunctionTok{round}\NormalTok{(critico\_izquierdo, }\DecValTok{2}\NormalTok{)), }\AttributeTok{pos =} \DecValTok{4}\NormalTok{, }\AttributeTok{col =} \StringTok{"red"}\NormalTok{, }\AttributeTok{cex =} \FloatTok{0.7}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{9---Hipótesis-Estadísticas-Resuelta_files/figure-latex/unnamed-chunk-9-1.pdf}}
+
+\textbf{Actividad 7} \textbf{P\_value}
+
+\section{pnorm()}\label{pnorm}
+
+(Slide 16 presentacion 9 - Sesión Pruebas de Hipótesis.pptx)
+
+Determine si las condiciones planteadas dan por resultado una prueba de
+cola derecha, de cola izquierda o de dos colas; despúes utilice la
+imagen adjunta para calcular el p - value, luego tome una decisión
+respecto a la hipótesis nula.
+
+Se utiliza un nivel de significancia de \(𝛼=0.05\) para probar la
+aseveración de que \(𝑝>0.25\). Considera que los datos muestrales dan
+por resultado un estadístico de prueba de \(𝑧=1.18\).
+
+\section{Criterio:}\label{criterio}
+
+Rechace 𝐻\_0 si el valor de 𝑃≤𝛼 (donde 𝛼 es el nivel de significancia)
+No rechace 𝐻\_0 si el valor 𝑃\textgreater 𝛼
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{alpha7 }\OtherTok{=} \FloatTok{0.05}
+\NormalTok{z }\OtherTok{=} \FloatTok{1.18}
+\CommentTok{\# Tenemos una prueba de cola derecha}
+\NormalTok{p\_value }\OtherTok{\textless{}{-}} \FunctionTok{pnorm}\NormalTok{(z, }\AttributeTok{lower.tail =} \ConstantTok{FALSE}\NormalTok{)}
+\CommentTok{\# la funcion pnorm usa el valor z como input y devuelve el valor p. A diferencia de la funcion qnorm que toma alpha como input y devuelve el valor de z (el estadistico de prueba)}
+\FunctionTok{print}\NormalTok{(p\_value)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.1190001
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{c}\NormalTok{(}\StringTok{"El area de p para el estadistico de prueba z es p ="}\NormalTok{, }\FunctionTok{round}\NormalTok{(p\_value, }\DecValTok{3}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "El area de p para el estadistico de prueba z es p ="
+## [2] "0.119"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ControlFlowTok{if}\NormalTok{ (p\_value }\SpecialCharTok{\textless{}=}\NormalTok{ alpha7)\{}
+  \FunctionTok{print}\NormalTok{(}\StringTok{"dado que 𝑃≤𝛼 entonces SI rechazamos la hipotesis nula H\_0 en favor de la alternativa H\_1."}\NormalTok{)}
+\NormalTok{\} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (p\_value }\SpecialCharTok{\textgreater{}}\NormalTok{ alpha7)\{}
+  \FunctionTok{print}\NormalTok{(}\StringTok{"dado que 𝑃\textgreater{}𝛼 entonces NO rechazamos la hipotesis nula."}\NormalTok{)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "dado que 𝑃>𝛼 entonces NO rechazamos la hipotesis nula."
+\end{verbatim}
+
+Se utiliza un nivel de significancia de 𝛼=0.05 para probar la
+aseveración de que 𝑝≠0.25, y los datos muestrales dan por resultado un
+estadístico de prueba de 𝑧=2.34.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Tenemos una prueba de dos colas}
+\NormalTok{p\_value }\OtherTok{\textless{}{-}} \DecValTok{2} \SpecialCharTok{*} \FunctionTok{pnorm}\NormalTok{(}\FloatTok{2.34}\NormalTok{, }\AttributeTok{lower.tail =} \ConstantTok{FALSE}\NormalTok{)}
+\FunctionTok{print}\NormalTok{(p\_value)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.01928374
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{c}\NormalTok{(}\StringTok{"El area de p para el estadistico de prueba z es p ="}\NormalTok{, }\FunctionTok{round}\NormalTok{(p\_value, }\DecValTok{3}\NormalTok{)) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "El area de p para el estadistico de prueba z es p ="
+## [2] "0.019"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ControlFlowTok{if}\NormalTok{ (p\_value }\SpecialCharTok{\textless{}=}\NormalTok{ alpha7)\{}
+  \FunctionTok{print}\NormalTok{(}\StringTok{"dado que 𝑃≤𝛼 entonces SI rechazamos la hipotesis nula H\_0 en favor de la alternativa H\_1."}\NormalTok{)}
+\NormalTok{\} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (p\_value }\SpecialCharTok{\textgreater{}}\NormalTok{ alpha7)\{}
+  \FunctionTok{print}\NormalTok{(}\StringTok{"dado que 𝑃\textgreater{}𝛼 entonces NO rechazamos la hipotesis nula."}\NormalTok{)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "dado que 𝑃≤𝛼 entonces SI rechazamos la hipotesis nula H_0 en favor de la alternativa H_1."
+\end{verbatim}
+
+\end{document}
