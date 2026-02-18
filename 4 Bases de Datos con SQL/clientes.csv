@@ -1,0 +1,31 @@
+"id_clientes","nombre_cliente","email_cliente","direccion_cliente","telefono_cliente"
+1,Juan Perez,juan.perez@gmail.com,"Calle Falsa 123, Madrid",612345678
+2,Maria Garcia,maria.garcia@gmail.com,"avenida de la Constitucion 45, Barcelona",698765432
+3,Luis Rodriguez,luis.rodriguez@gmail.com,"Plaza Mayor 8, Valencia",645123987
+4,ana Lopez,ana.lopez@gmail.com,"Calle Gran Via 2, Madrid",699876543
+5,Carlos Sanchez,carlos.sanchez@yahoo.com,"Calle del Sol 50, Sevilla",620234567
+6,Isabel Martinez,isabel.martinez@gmail.com,"Calle Luna 21, Zaragoza",634567890
+7,Javier Fernandez,javier.fernandez@gmail.com,"Paseo de Gracia 11, Barcelona",612678123
+8,Sofia Gomez,sofia.gomez@gmail.com,"Calle del Mar 75, Valencia",688123456
+9,Pedro Diaz,pedro.diaz@gmail.com,"Calle 8 de Marzo 90, Madrid",620987654
+10,Laura Ruiz,laura.ruiz@yahoo.com,"avenida de america 55, Sevilla",687234567
+11,Jose Ramirez,jose.ramirez@gmail.com,"Calle del Pilar 12, Zaragoza",693567890
+12,Marta Jimenez,marta.jimenez@gmail.com,"Calle San Juan 33, Barcelona",645678901
+13,Miguel Garcia,miguel.garcia@gmail.com,"avenida del Rio 10, Madrid",632345678
+14,Lucia Perez,lucia.perez@yahoo.com,"Calle de la Paz 20, Valencia",687654321
+15,antonio Gonzalez,antonio.gonzalez@gmail.com,"Calle Mayor 25, Sevilla",645234567
+16,Eva Fernandez,eva.fernandez@gmail.com,"Calle del Norte 15, Barcelona",620678345
+17,Francisco Lopez,francisco.lopez@gmail.com,"avenida de la Libertad 8, Madrid",698123654
+18,Claudia Sanchez,claudia.sanchez@gmail.com,"Calle del Lago 40, Valencia",633234567
+19,alejandro Martinez,alejandro.martinez@gmail.com,"Calle de los arboles 30, Sevilla",695345678
+20,Raquel Diaz,raquel.diaz@gmail.com,"avenida de la Feria 100, Zaragoza",688234567
+21,David Gomez,david.gomez@gmail.com,"Calle de los Leones 5, Madrid",612345679
+22,Paula Hernandez,paula.hernandez@gmail.com,"Calle de la Reina 8, Barcelona",699876542
+23,Santiago Lopez,santiago.lopez@gmail.com,"Calle del Sol 4, Valencia",630987654
+24,Beatriz Ruiz,beatriz.ruiz@gmail.com,"avenida de la Paz 35, Sevilla",692345678
+25,Jorge Ramirez,jorge.ramirez@yahoo.com,"Calle del Mar 18, Zaragoza",687123456
+26,Cristina Perez,cristina.perez@gmail.com,"Calle del Oeste 70, Madrid",698654321
+27,Eduardo Fernandez,eduardo.fernandez@gmail.com,"avenida de los Campos 28, Barcelona",687654230
+28,Marina Gonzalez,marina.gonzalez@gmail.com,"Calle de la Torre 50, Valencia",688765432
+29,Ruben Sanchez,ruben.sanchez@gmail.com,"Calle del Pilar 16, Sevilla",699876543
+30,Carla Diaz,carla.diaz@yahoo.com,"Calle de los Bosques 33, Zaragoza",631234567
